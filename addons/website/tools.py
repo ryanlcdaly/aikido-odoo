@@ -164,7 +164,7 @@ def text_from_html(html_fragment, collapse_whitespace=False):
     :return: text extracted from the html
     """
     # lxml requires one single root element
-    tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True))
+    tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True, resolve_entities=False))
     content = ' '.join(tree.itertext())
     if collapse_whitespace:
         content = re.sub('\\s+', ' ', content).strip()
