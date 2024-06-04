@@ -6,6 +6,7 @@ from odoo.addons.l10n_it_edi.tools.remove_signature import remove_signature
 from lxml import etree
 import logging
 import re
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class IrAttachment(models.Model):
 
         parser = etree.XMLParser(recover=True, resolve_entities=False)
         try:
-            xml_tree = etree.fromstring(decoded_content, parser)
+            xml_tree = etree.fromstring(decoded_content, parser, parser=lxml.etree.XMLParser(resolve_entities=False))
         except etree.ParseError as e:
             _logger.exception("Error when converting the xml content to etree: %s", e)
             return []

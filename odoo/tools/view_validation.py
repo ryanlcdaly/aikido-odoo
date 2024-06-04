@@ -9,6 +9,7 @@ import re
 from lxml import etree
 from odoo import tools
 from odoo.osv.expression import DOMAIN_OPERATORS
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -298,7 +299,7 @@ def relaxng(view_type):
     if view_type not in _relaxng_cache:
         with tools.file_open(os.path.join('base', 'rng', '%s_view.rng' % view_type)) as frng:
             try:
-                relaxng_doc = etree.parse(frng)
+                relaxng_doc = etree.parse(frng, parser=lxml.etree.XMLParser(resolve_entities=False))
                 _relaxng_cache[view_type] = etree.RelaxNG(relaxng_doc)
             except Exception:
                 _logger.exception('Failed to load RelaxNG XML schema for views validation')

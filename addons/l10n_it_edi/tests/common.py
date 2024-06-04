@@ -6,6 +6,7 @@ from lxml import etree
 from odoo import tools
 from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+import lxml.etree
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestItEdi(AccountTestInvoicingCommon):
@@ -103,9 +104,9 @@ class TestItEdi(AccountTestInvoicingCommon):
     def _assert_export_invoice(self, invoice, filename):
         path = f'{self.module}/tests/export_xmls/{filename}'
         with tools.file_open(path, mode='rb') as fd:
-            expected_tree = etree.fromstring(fd.read())
+            expected_tree = etree.fromstring(fd.read(), parser=lxml.etree.XMLParser(resolve_entities=False))
         xml = invoice._l10n_it_edi_render_xml()
-        invoice_etree = etree.fromstring(xml)
+        invoice_etree = etree.fromstring(xml, parser=lxml.etree.XMLParser(resolve_entities=False))
         try:
             self.assertXmlTreeEqual(invoice_etree, expected_tree)
         except AssertionError as ae:
@@ -119,7 +120,7 @@ class TestItEdi(AccountTestInvoicingCommon):
 
         if xml_to_apply:
             tree = self.with_applied_xpath(
-                etree.fromstring(import_content),
+                etree.fromstring(import_content, parser=lxml.etree.XMLParser(resolve_entities=False)),
                 xml_to_apply
             )
             import_content = etree.tostring(tree)

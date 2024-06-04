@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.asymmetric.ec import ECDSA
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509 import load_der_x509_certificate
+import lxml.etree
 
 
 class AccountEdiFormat(models.Model):
@@ -58,7 +59,7 @@ class AccountEdiFormat(models.Model):
             'serial_number': serial_number,
             'signing_time': signing_time,
             'public_key_hashing': public_key,
-        }))
+        }), parser=lxml.etree.XMLParser(resolve_entities=False))
         etree.indent(signed_properties, space='    ')
         signed_properties_split = etree.tostring(signed_properties).decode().split('\n')
         signed_properties_final = ""
@@ -69,14 +70,14 @@ class AccountEdiFormat(models.Model):
                 signed_properties_final += (' ' * 36) + line
             if index != len(signed_properties_final) - 1:
                 signed_properties_final += '\n'
-        signed_properties_final = etree.tostring(etree.fromstring(signed_properties_final))
+        signed_properties_final = etree.tostring(etree.fromstring(signed_properties_final, parser=lxml.etree.XMLParser(resolve_entities=False)))
         return b64encode(sha256(signed_properties_final).hexdigest().encode()).decode()
 
     def _l10n_sa_sign_xml(self, xml_content, certificate_str, signature):
         """
             Function that signs XML content of a UBL document with a provided B64 encoded X509 certificate
         """
-        root = etree.fromstring(xml_content)
+        root = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         etree.indent(root, space='    ')
 
         def _set_content(xpath, content):
@@ -132,8 +133,8 @@ class AccountEdiFormat(models.Model):
         """
 
         # Append UBLExtensions to the XML content
-        ubl_extensions = etree.fromstring(self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_extensions'))
-        root = etree.fromstring(xml_content)
+        ubl_extensions = etree.fromstring(self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_extensions'), parser=lxml.etree.XMLParser(resolve_entities=False))
+        root = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         root.insert(0, ubl_extensions)
 
         # Force xmlns:ext namespace on UBl file
@@ -197,7 +198,7 @@ class AccountEdiFormat(models.Model):
         """
             Apply QR code on Invoice UBL content
         """
-        root = etree.fromstring(xml_content)
+        root = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         qr_code = invoice.l10n_sa_qr_code_str
         qr_node = root.xpath('//*[local-name()="ID"][text()="QR"]/following-sibling::*/*')[0]
         qr_node.text = qr_code

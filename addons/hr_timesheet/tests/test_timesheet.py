@@ -6,6 +6,7 @@ from lxml import etree
 from odoo.fields import Command
 from odoo.tests.common import TransactionCase, Form
 from odoo.exceptions import AccessError, RedirectWarning, UserError, ValidationError
+import lxml.etree
 
 
 class TestCommonTimesheet(TransactionCase):
@@ -103,7 +104,7 @@ class TestCommonTimesheet(TransactionCase):
             for company, expected_label in zip(companies, expected_labels):
                 view = self.env.ref(view_xml_id)
                 view = self.env[view.model].with_company(company).get_view(view.id, view.type)
-                tree = etree.fromstring(view['arch'])
+                tree = etree.fromstring(view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
                 field_node = tree.xpath(xpath_expr)[0]
                 self.assertEqual(field_node.get('string'), expected_label)
 

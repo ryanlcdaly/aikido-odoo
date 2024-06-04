@@ -402,6 +402,7 @@ from odoo.exceptions import UserError, AccessDenied, AccessError, MissingError, 
 
 from odoo.addons.base.models.assetsbundle import AssetsBundle
 from odoo.tools.constants import SCRIPT_EXTENSIONS, STYLE_EXTENSIONS, TEMPLATE_EXTENSIONS
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -815,7 +816,7 @@ class IrQWeb(models.AbstractModel):
                 element = doc_or_elem
                 document = etree.tostring(doc_or_elem, encoding='unicode')
             elif isinstance(doc_or_elem, str):
-                element = etree.fromstring(doc_or_elem)
+                element = etree.fromstring(doc_or_elem, parser=lxml.etree.XMLParser(resolve_entities=False))
                 document = doc_or_elem
             else:
                 raise TypeError(f"Loaded template {ref!r} should be a string.")
@@ -847,7 +848,7 @@ class IrQWeb(models.AbstractModel):
         IrUIView = self.env['ir.ui.view'].sudo()
         view = IrUIView._get(ref)
         template = IrUIView._read_template(view.id)
-        etree_view = etree.fromstring(template)
+        etree_view = etree.fromstring(template, parser=lxml.etree.XMLParser(resolve_entities=False))
 
         xmlid = view.key or ref
         if isinstance(ref, int):
@@ -2644,7 +2645,7 @@ class IrQWeb(models.AbstractModel):
         js_bundles = set()
         css_bundles = set()
         for view in views:
-            for call_asset in etree.fromstring(view.arch_db).xpath("//*[@t-call-assets]"):
+            for call_asset in etree.fromstring(view.arch_db, parser=lxml.etree.XMLParser(resolve_entities=False)).xpath("//*[@t-call-assets]"):
                 asset = call_asset.get('t-call-assets')
                 js = str2bool(call_asset.get('t-js', 'True'))
                 css = str2bool(call_asset.get('t-css', 'True'))

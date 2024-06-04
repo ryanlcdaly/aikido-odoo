@@ -8,6 +8,7 @@ from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tests.common import TransactionCase
 from odoo.tools.misc import mute_logger
 from odoo import Command
+import lxml.etree
 
 # test group that demo user should not have
 GROUP_SYSTEM = 'base.group_system'
@@ -55,7 +56,7 @@ class TestACL(TransactionCaseWithUserDemo):
             #         <field name="decimal_places"/>
             #     </group>
             form_view = currency.get_view(False, 'form')
-        view_arch = etree.fromstring(form_view.get('arch'))
+        view_arch = etree.fromstring(form_view.get('arch'), parser=lxml.etree.XMLParser(resolve_entities=False))
         has_group_system = self.user_demo.has_group(GROUP_SYSTEM)
         self.assertFalse(has_group_system, "`demo` user should not belong to the restricted group before the test")
         self.assertIn('decimal_places', original_fields, "'decimal_places' field must be properly visible before the test")
@@ -69,7 +70,7 @@ class TestACL(TransactionCaseWithUserDemo):
 
         fields = currency.fields_get([])
         form_view = currency.get_view(False, 'form')
-        view_arch = etree.fromstring(form_view.get('arch'))
+        view_arch = etree.fromstring(form_view.get('arch'), parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertNotIn('decimal_places', fields, "'decimal_places' field should be gone")
         self.assertEqual(view_arch.xpath("//field[@name='decimal_places']"), [],
                           "Field 'decimal_places' must not be found in view definition")
@@ -82,7 +83,7 @@ class TestACL(TransactionCaseWithUserDemo):
         fields = currency.fields_get([])
         with self.debug_mode():
             form_view = currency.get_view(False, 'form')
-        view_arch = etree.fromstring(form_view.get('arch'))
+        view_arch = etree.fromstring(form_view.get('arch'), parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(has_group_system, "`demo` user should now belong to the restricted group")
         self.assertIn('decimal_places', fields, "'decimal_places' field must be properly visible again")
         self.assertNotEqual(view_arch.xpath("//field[@name='decimal_places']"), [],
@@ -144,7 +145,7 @@ class TestACL(TransactionCaseWithUserDemo):
         methods = ['create', 'edit', 'delete']
         company = self.env['res.company'].with_user(self.user_demo)
         company_view = company.get_view(False, 'form')
-        view_arch = etree.fromstring(company_view['arch'])
+        view_arch = etree.fromstring(company_view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
 
         # demo not part of the group_system, create edit and delete must be False
         for method in methods:
@@ -153,7 +154,7 @@ class TestACL(TransactionCaseWithUserDemo):
         # demo part of the group_system, create edit and delete must not be specified
         company = self.env['res.company'].with_user(self.env.ref("base.user_admin"))
         company_view = company.get_view(False, 'form')
-        view_arch = etree.fromstring(company_view['arch'])
+        view_arch = etree.fromstring(company_view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         for method in methods:
             self.assertIsNone(view_arch.get(method))
 
@@ -164,7 +165,7 @@ class TestACL(TransactionCaseWithUserDemo):
         methods = ['create', 'write']
         company = self.env['res.company'].with_user(self.user_demo)
         company_view = company.get_view(False, 'form')
-        view_arch = etree.fromstring(company_view['arch'])
+        view_arch = etree.fromstring(company_view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         field_node = view_arch.xpath("//field[@name='currency_id']")
         self.assertTrue(len(field_node), "currency_id field should be in company from view")
         for method in methods:
@@ -172,7 +173,7 @@ class TestACL(TransactionCaseWithUserDemo):
 
         company = self.env['res.company'].with_user(self.env.ref("base.user_admin"))
         company_view = company.get_view(False, 'form')
-        view_arch = etree.fromstring(company_view['arch'])
+        view_arch = etree.fromstring(company_view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         field_node = view_arch.xpath("//field[@name='currency_id']")
         for method in methods:
             self.assertEqual(field_node[0].get('can_' + method), 'True')

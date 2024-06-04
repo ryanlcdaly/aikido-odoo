@@ -8,6 +8,7 @@ from odoo.tests import tagged
 from odoo import fields, Command
 
 from collections import defaultdict
+import lxml.etree
 
 
 @tagged('post_install', '-at_install')
@@ -789,7 +790,7 @@ class TestAccountMoveInRefundOnchanges(AccountTestInvoicingCommon):
         # This is an in_refund invoice, `invoice_vendor_bill_id` is not supposed to be visible
         # and therefore not supposed to be changed.
         view = self.env.ref('account.view_move_form')
-        tree = etree.fromstring(view.arch)
+        tree = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         for node in tree.xpath('//field[@name="invoice_vendor_bill_id"]'):
             del node.attrib['invisible']
         view.arch = etree.tostring(tree)

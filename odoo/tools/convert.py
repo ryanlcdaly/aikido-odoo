@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import lxml.etree
+
 __all__ = [
     'convert_file', 'convert_sql_import',
     'convert_csv_import', 'convert_xml_import'
@@ -669,9 +671,9 @@ def convert_csv_import(env, module, fname, csvcontent, idref=None, mode='init',
         raise Exception(_('Module loading %s failed: file %s could not be processed:\n %s') % (module, fname, warning_msg))
 
 def convert_xml_import(env, module, xmlfile, idref=None, mode='init', noupdate=False, report=None):
-    doc = etree.parse(xmlfile)
+    doc = etree.parse(xmlfile, parser=lxml.etree.XMLParser(resolve_entities=False))
     schema = os.path.join(config['root_path'], 'import_xml.rng')
-    relaxng = etree.RelaxNG(etree.parse(schema))
+    relaxng = etree.RelaxNG(etree.parse(schema, parser=lxml.etree.XMLParser(resolve_entities=False)))
     try:
         relaxng.assert_(doc)
     except Exception:

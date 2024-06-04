@@ -11,6 +11,7 @@ from odoo.modules.module import get_resource_from_path
 from odoo.tools.convert import xml_import
 from odoo.tools.misc import file_path
 from odoo.tools.translate import TranslationImporter, get_po_paths
+import lxml.etree
 
 
 class TemplateResetMixin(models.AbstractModel):
@@ -83,7 +84,7 @@ class TemplateResetMixin(models.AbstractModel):
                 for field_name, field in template._fields.items():
                     if field.translate is True:
                         template.update_field_translations(field_name, lang_false)
-                doc = etree.parse(fullpath)
+                doc = etree.parse(fullpath, parser=lxml.etree.XMLParser(resolve_entities=False))
                 for rec in doc.xpath(expr, tag='record', xml_id=xml_id, external_id=external_id):
                     # We don't have a way to pass context while loading record from a file, so we use this hack
                     # to pass the context key that is needed to reset the fields not available in data file

@@ -30,6 +30,7 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.addons.portal.controllers.web import Home
 from odoo.addons.web.controllers.binary import Binary
 from odoo.addons.website.tools import get_base_domain
+import lxml.etree
 
 logger = logging.getLogger(__name__)
 
@@ -416,7 +417,7 @@ class Website(Home):
         templates = request.env['ir.ui.view'].sudo().search_read(domain, ['key', 'name', 'arch_db'])
 
         for t in templates:
-            children = etree.fromstring(t.pop('arch_db')).getchildren()
+            children = etree.fromstring(t.pop('arch_db'), parser=lxml.etree.XMLParser(resolve_entities=False)).getchildren()
             attribs = children and children[0].attrib or {}
             t['numOfEl'] = attribs.get('data-number-of-elements')
             t['numOfElSm'] = attribs.get('data-number-of-elements-sm')
@@ -653,7 +654,7 @@ class Website(Home):
         View = request.env['ir.ui.view']
         result = []
         groups_html = View._render_template("website.new_page_template_groups")
-        groups_el = etree.fromstring(f'<data>{groups_html}</data>')
+        groups_el = etree.fromstring(f'<data>{groups_html}</data>', parser=lxml.etree.XMLParser(resolve_entities=False))
         for group_el in groups_el.getchildren():
             group = {
                 'id': group_el.attrib['id'],

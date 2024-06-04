@@ -4,6 +4,8 @@ from odoo.tools.pdf import OdooPdfFileReader
 
 from lxml import etree
 from struct import error as StructError
+import lxml.etree
+
 try:
     from PyPDF2.errors import PdfReadError
 except ImportError:
@@ -35,7 +37,7 @@ class IrAttachment(models.Model):
         :returns:           A list with a dictionary.
         """
         try:
-            xml_tree = etree.fromstring(content)
+            xml_tree = etree.fromstring(content, parser=lxml.etree.XMLParser(resolve_entities=False))
         except Exception as e:
             _logger.exception("Error when converting the xml content to etree: %s", e)
             return []

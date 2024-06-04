@@ -8,6 +8,7 @@ from lxml import etree
 from odoo.addons.hr.tests.common import TestHrCommon
 from odoo.tests import new_test_user, tagged, Form
 from odoo.exceptions import AccessError
+import lxml.etree
 
 @tagged('post_install', '-at_install')
 class TestSelfAccessProfile(TestHrCommon):
@@ -22,7 +23,7 @@ class TestSelfAccessProfile(TestHrCommon):
         })
         view = self.env.ref('hr.res_users_view_form_profile')
         view_infos = james.get_view(view.id)
-        fields = [el.get('name') for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
+        fields = [el.get('name') for el in etree.fromstring(view_infos['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[not(ancestor::field)]')]
         james.read(fields)
 
     def test_readonly_fields(self):
@@ -40,7 +41,7 @@ class TestSelfAccessProfile(TestHrCommon):
         view_infos = james.get_view(view.id)
         employee_related_fields = {
             el.get('name')
-            for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')
+            for el in etree.fromstring(view_infos['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[not(ancestor::field)]')
             if fields[el.get('name')].related and fields[el.get('name')].related.split('.')[0] == 'employee_id'
         }
 
@@ -67,12 +68,12 @@ class TestSelfAccessProfile(TestHrCommon):
         user_all_groups = new_test_user(self.env, groups='base.group_user', login='hel', name='God')
         user_all_groups.write({'groups_id': [(4, group.id, False) for group in all_groups]})
         view_infos = self.env['res.users'].with_user(user_all_groups).get_view(view.id)
-        full_fields = [el.get('name') for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
+        full_fields = [el.get('name') for el in etree.fromstring(view_infos['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[not(ancestor::field)]')]
 
         # Now check the view for a simple user
         user = new_test_user(self.env, login='gro', name='Grouillot')
         view_infos = self.env['res.users'].with_user(user).get_view(view.id)
-        fields = [el.get('name') for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
+        fields = [el.get('name') for el in etree.fromstring(view_infos['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[not(ancestor::field)]')]
 
         # Compare both
         self.assertEqual(full_fields, fields, "View fields should not depend on user's groups")

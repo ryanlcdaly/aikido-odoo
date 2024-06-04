@@ -7,6 +7,7 @@ from freezegun import freeze_time
 from odoo import tools
 from odoo.tests import tagged, Form
 from odoo.addons.l10n_it_edi.tests.common import TestItEdi
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -136,8 +137,8 @@ class TestItEdiDDT(TestItEdi):
         # Check the XML output of the invoice
         invoice_xml = deferred_invoice._l10n_it_edi_render_xml()
         expected_xml = self._get_stock_ddt_test_file_content("deferred_invoice.xml")
-        result = etree.fromstring(invoice_xml)
-        expected = etree.fromstring(expected_xml)
+        result = etree.fromstring(invoice_xml, parser=lxml.etree.XMLParser(resolve_entities=False))
+        expected = etree.fromstring(expected_xml, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertXmlTreeEqual(result, expected)
 
     def _create_delivery(self, sale_order, qty=1):

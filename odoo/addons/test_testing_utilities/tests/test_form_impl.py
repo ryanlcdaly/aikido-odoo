@@ -11,6 +11,7 @@ from operator import itemgetter
 
 from odoo.tests import TransactionCase, Form
 from odoo import Command
+import lxml.etree
 
 
 class TestBasic(TransactionCase):
@@ -340,14 +341,14 @@ class TestO2M(TransactionCase):
 
         self.assertEqual(
             [el.get('name') for el in f._view['tree'].xpath('//field[@name="subs"]/tree//field')],
-            [el.get('name') for el in etree.fromstring(custom_tree['arch']).xpath('//field')],
+            [el.get('name') for el in etree.fromstring(custom_tree['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field')],
             'check that the tree view is the one referenced by tree_view_ref'
         )
         subs_field = f._view['fields']['subs']
         self.assertIs(subs_field['edition_view']['tree'], f._view['tree'].xpath('//field[@name="subs"]/tree')[0], "check that the edition view is the tree view")
         self.assertEqual(
             [el.get('name') for el in subs_field['edition_view']['tree'].xpath('.//field')],
-            [el.get('name') for el in etree.fromstring(custom_tree['arch']).xpath('//field')],
+            [el.get('name') for el in etree.fromstring(custom_tree['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field')],
         )
 
         with f.subs.new() as s:

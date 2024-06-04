@@ -11,6 +11,7 @@ from odoo.addons.mail.tests.common import MailCommon
 from odoo.exceptions import UserError
 from odoo.tests import Form
 from odoo.tests.common import users
+import lxml.etree
 
 
 class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
@@ -20,7 +21,7 @@ class TestSurveyInvite(common.TestSurveyCommon, MailCommon):
         # by default signup not allowed
         self.env["ir.config_parameter"].set_param('auth_signup.invitation_scope', 'b2b')
         view = self.env.ref('survey.survey_invite_view_form').sudo()
-        tree = etree.fromstring(view.arch)
+        tree = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         # Remove the invisible on `emails` to be able to test the onchange `_onchange_emails`
         # which raises an error when attempting to change `emails`
         # while the survey is set with `users_login_required` to True

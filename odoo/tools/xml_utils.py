@@ -9,6 +9,7 @@ from lxml import etree
 import contextlib
 
 from odoo.exceptions import UserError
+import lxml.etree
 
 
 _logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def _check_with_xsd(tree_or_str, stream, env=None, prefix=None):
         enable 'SiiTypes_v10.xsd' to be resolved to 'l10n_cl_edi.SiiTypes_v10.xsd'.
     """
     if not isinstance(tree_or_str, etree._Element):
-        tree_or_str = etree.fromstring(tree_or_str)
+        tree_or_str = etree.fromstring(tree_or_str, parser=lxml.etree.XMLParser(resolve_entities=False))
     parser = etree.XMLParser()
     if env:
         parser.resolvers.add(odoo_resolver(env, prefix))
@@ -118,7 +119,7 @@ def cleanup_xml_node(xml_node_or_string, remove_blank_text=True, remove_blank_no
     if isinstance(xml_node, str):
         xml_node = xml_node.encode()  # misnomer: fromstring actually reads bytes
     if isinstance(xml_node, bytes):
-        xml_node = etree.fromstring(xml_node)
+        xml_node = etree.fromstring(xml_node, parser=lxml.etree.XMLParser(resolve_entities=False))
 
     # Process leaf nodes iteratively
     # Depth-first, so any inner node may become a leaf too (if children are removed)

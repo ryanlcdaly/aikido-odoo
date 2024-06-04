@@ -11,6 +11,7 @@ from lxml.html import builder as h
 
 from odoo.modules.module import _DEFAULT_MANIFEST
 from odoo.tests import common, HttpCase, tagged
+import lxml.etree
 
 
 def attrs(**kwargs):
@@ -181,7 +182,7 @@ class TestViewSaving(TestViewSavingCommon):
         self.assertEqual(company.name, "Acme Corporation")
         self.assertEqual(company.phone, "+12 3456789")
         self.eq(
-            ET.fromstring(self.view_id.arch),
+            ET.fromstring(self.view_id.arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             h.DIV(
                 h.DIV(
                     h.H3("Column 1"),
@@ -267,7 +268,7 @@ class TestViewSaving(TestViewSavingCommon):
         self.view_id.save(value=replacement, xpath='/div/div[2]/ul/li[3]')
 
         self.eq(
-            ET.fromstring(self.view_id.arch.encode('utf-8')),
+            ET.fromstring(self.view_id.arch.encode('utf-8'), parser=lxml.etree.XMLParser(resolve_entities=False)),
             h.DIV(
                 h.DIV(
                     h.H3("Column 1"),

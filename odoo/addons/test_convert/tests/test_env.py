@@ -11,6 +11,7 @@ from lxml.builder import E
 from odoo.tests import common
 from odoo.tools import config
 from odoo.tools.convert import xml_import
+import lxml.etree
 
 odoo = E.odoo
 data = E.data
@@ -26,8 +27,8 @@ class TestEnv(common.TransactionCase):
     def importer(self, doc):
         etree.RelaxNG(
             etree.parse(
-                os.path.join(config['root_path'], 'import_xml.rng')
-            )
+                os.path.join(config['root_path'], 'import_xml.rng'), 
+            parser=lxml.etree.XMLParser(resolve_entities=False))
         ).assert_(doc)
         self._importer.parse(doc)
 

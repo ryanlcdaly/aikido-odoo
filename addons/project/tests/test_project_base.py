@@ -7,6 +7,7 @@ from odoo.osv import expression
 from odoo.tests import users
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import UserError
+import lxml.etree
 
 
 class TestProjectCommon(TransactionCase):
@@ -158,7 +159,7 @@ class TestProjectBase(TestProjectCommon):
         for user, filter_visible_expected in ((user1, False), (user2, True)):
             Task = self.env['project.task'].with_user(user)
             arch = Task.get_view(self.env.ref('project.view_task_search_form').id)['arch']
-            tree = etree.fromstring(arch)
+            tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
             self.assertEqual(bool(tree.xpath('//filter[@name="message_needaction"]')), filter_visible_expected)
 
     @users('bastien')

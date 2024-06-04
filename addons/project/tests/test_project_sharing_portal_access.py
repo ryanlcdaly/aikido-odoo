@@ -8,6 +8,7 @@ from odoo.exceptions import AccessError
 from odoo.tests import tagged
 
 from .test_project_sharing import TestProjectSharingCommon
+import lxml.etree
 
 
 @tagged('post_install', '-at_install')
@@ -51,7 +52,7 @@ class TestProjectSharingPortalAccess(TestProjectSharingCommon):
     def test_readonly_fields(self):
         """ The fields are not writeable should not be editable by the portal user. """
         view_infos = self.task_portal.get_view(self.env.ref(self.project_sharing_form_view_xml_id).id)
-        fields = [el.get('name') for el in etree.fromstring(view_infos['arch']).xpath('//field[not(ancestor::field)]')]
+        fields = [el.get('name') for el in etree.fromstring(view_infos['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[not(ancestor::field)]')]
         project_task_fields = {
             field_name
             for field_name in fields

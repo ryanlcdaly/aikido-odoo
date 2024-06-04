@@ -15,6 +15,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.serialization import Encoding, load_pem_private_key
 from urllib.parse import urljoin
+import lxml.etree
 
 ZATCA_API_URLS = {
     "sandbox": "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/",
@@ -341,7 +342,7 @@ class AccountJournal(models.Model):
         if xml_name.startswith('simplified'):
             qr_code_str = self.env['account.move']._l10n_sa_get_qr_code(self, signed_xml, b64decode(PCSID).decode(),
                                                                         signature, True)
-            root = etree.fromstring(signed_xml)
+            root = etree.fromstring(signed_xml, parser=lxml.etree.XMLParser(resolve_entities=False))
             qr_node = root.xpath('//*[local-name()="ID"][text()="QR"]/following-sibling::*/*')[0]
             qr_node.text = b64encode(qr_code_str).decode()
             return etree.tostring(root, with_tail=False)
@@ -351,8 +352,8 @@ class AccountJournal(models.Model):
         """
             Prepare the XML content of the test invoices before running the compliance checks
         """
-        ubl_extensions = etree.fromstring(self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_extensions'))
-        root = etree.fromstring(xml_content.encode())
+        ubl_extensions = etree.fromstring(self.env['ir.qweb']._render('l10n_sa_edi.export_sa_zatca_ubl_extensions'), parser=lxml.etree.XMLParser(resolve_entities=False))
+        root = etree.fromstring(xml_content.encode(), parser=lxml.etree.XMLParser(resolve_entities=False))
         root.insert(0, ubl_extensions)
         ns_map = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_get_namespaces()
 
@@ -452,7 +453,7 @@ class AccountJournal(models.Model):
             API call to the COMPLIANCE endpoint to generate a security token used for subsequent API calls
             Requires a CSR token and a One Time Password (OTP)
         """
-        invoice_tree = etree.fromstring(xml_content)
+        invoice_tree = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
 
         # Get the Invoice Hash from the XML document
         invoice_hash_node = invoice_tree.xpath('//*[@Id="invoiceSignedData"]/*[local-name()="DigestValue"]')[0]
@@ -487,7 +488,7 @@ class AccountJournal(models.Model):
                 - If SIMPLIFIED invoice: Reporting
                 - If STANDARD invoice: Clearance
         """
-        invoice_tree = etree.fromstring(xml_content)
+        invoice_tree = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         invoice_hash_node = invoice_tree.xpath('//*[@Id="invoiceSignedData"]/*[local-name()="DigestValue"]')[0]
         invoice_hash = invoice_hash_node.text
         request_data = {
