@@ -85,7 +85,7 @@ def directory(p, create=False):
         die("%s is not a directory" % p)
     return expanded
 
-env = jinja2.Environment()
+env = jinja2.Environment(autoescape=True)
 env.filters['snake'] = snake
 env.filters['pascal'] = pascal
 class template(object):
