@@ -6,7 +6,6 @@ import lxml
 import os
 import requests
 import sys
-import tempfile
 import zipfile
 from collections import defaultdict
 from io import BytesIO
@@ -19,6 +18,7 @@ from odoo.osv.expression import is_leaf
 from odoo.release import major_version
 from odoo.tools import convert_csv_import, convert_sql_import, convert_xml_import, exception_to_unicode
 from odoo.tools import file_open, file_open_temporary_directory, ormcache
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 
@@ -376,8 +376,7 @@ class IrModule(models.Model):
             raise AccessDenied()
         module_name = self.env.context.get('module_name')
         try:
-            resp = requests.get(
-                f"{APPS_URL}/loempia/download/data_app/{module_name}/{major_version}",
+            resp = safe_requests.get(f"{APPS_URL}/loempia/download/data_app/{module_name}/{major_version}",
                 timeout=5.0,
             )
             resp.raise_for_status()

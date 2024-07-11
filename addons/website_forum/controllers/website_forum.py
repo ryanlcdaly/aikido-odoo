@@ -4,10 +4,8 @@ import json
 import logging
 
 import lxml
-import requests
 import werkzeug.exceptions
 import werkzeug.urls
-import werkzeug.wrappers
 
 from odoo import _, http, tools
 from odoo.addons.http_routing.models.ir_http import slug
@@ -17,6 +15,7 @@ from odoo.addons.website_profile.controllers.main import WebsiteProfile
 from odoo.exceptions import AccessError, UserError
 from odoo.http import request
 from odoo.osv import expression
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 
@@ -270,7 +269,7 @@ class WebsiteForum(WebsiteProfile):
     @http.route('/forum/get_url_title', type='json', auth="user", methods=['POST'], website=True)
     def get_url_title(self, **kwargs):
         try:
-            req = requests.get(kwargs.get('url'))
+            req = safe_requests.get(kwargs.get('url'))
             req.raise_for_status()
             arch = lxml.html.fromstring(req.content)
             return arch.find(".//title").text

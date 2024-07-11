@@ -2,8 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-
-import requests
 import werkzeug.http
 
 from odoo import api, fields, models
@@ -11,6 +9,8 @@ from odoo.exceptions import AccessDenied, UserError
 from odoo.addons.auth_signup.models.res_users import SignupError
 
 from odoo.addons import base
+from security import safe_requests
+
 base.models.res_users.USER_PRIVATE_FIELDS.append('oauth_access_token')
 
 class ResUsers(models.Model):
@@ -26,9 +26,9 @@ class ResUsers(models.Model):
 
     def _auth_oauth_rpc(self, endpoint, access_token):
         if self.env['ir.config_parameter'].sudo().get_param('auth_oauth.authorization_header'):
-            response = requests.get(endpoint, headers={'Authorization': 'Bearer %s' % access_token}, timeout=10)
+            response = safe_requests.get(endpoint, headers={'Authorization': 'Bearer %s' % access_token}, timeout=10)
         else:
-            response = requests.get(endpoint, params={'access_token': access_token}, timeout=10)
+            response = safe_requests.get(endpoint, params={'access_token': access_token}, timeout=10)
 
         if response.ok: # nb: could be a successful failure
             return response.json()

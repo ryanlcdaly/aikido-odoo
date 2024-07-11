@@ -3,6 +3,7 @@
 
 from lxml import html
 import requests
+from security import safe_requests
 
 
 def get_link_preview_from_url(url, request_session=None):
@@ -25,7 +26,7 @@ def get_link_preview_from_url(url, request_session=None):
         if request_session:
             response = request_session.get(url, timeout=3, headers=user_agent, allow_redirects=True, stream=True)
         else:
-            response = requests.get(url, timeout=3, headers=user_agent, allow_redirects=True, stream=True)
+            response = safe_requests.get(url, timeout=3, headers=user_agent, allow_redirects=True, stream=True)
     except requests.exceptions.RequestException:
         return False
     if not response.ok or not response.headers.get('Content-Type'):

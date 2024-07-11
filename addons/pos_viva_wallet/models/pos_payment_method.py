@@ -5,6 +5,7 @@ import requests
 
 from odoo import fields, models, api, tools, _
 from odoo.exceptions import UserError, AccessError
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 TIMEOUT = 10
@@ -81,7 +82,7 @@ class PosPaymentMethod(models.Model):
 
         auth = requests.auth.HTTPBasicAuth(viva_wallet_merchant_id, viva_wallet_api_key)
         try:
-            resp = requests.get(f"{endpoint}/api/messages/config/token", auth=auth, timeout=TIMEOUT)
+            resp = safe_requests.get(f"{endpoint}/api/messages/config/token", auth=auth, timeout=TIMEOUT)
         except requests.exceptions.RequestException:
             _logger.exception('Failed to call https://%s/api/messages/config/token endpoint', endpoint)
         return resp.json().get('Key')

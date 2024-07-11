@@ -8,6 +8,7 @@ from urllib import parse
 
 from odoo import api, fields, models
 from odoo.addons.account_peppol.tools.demo_utils import handle_demo
+from security import safe_requests
 
 TIMEOUT = 10
 
@@ -72,7 +73,7 @@ class ResPartner(models.Model):
         smp_url = f"http://B-{hash_participant}.iso6523-actorid-upis.{sml_zone}.tech.ec.europa.eu/{endpoint_participant}"
         self.account_peppol_validity_last_check = fields.Date.context_today(self)
         try:
-            response = requests.get(smp_url, timeout=TIMEOUT)
+            response = safe_requests.get(smp_url, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError:
             self.account_peppol_is_endpoint_valid = False
         else:

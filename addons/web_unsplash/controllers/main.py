@@ -12,6 +12,7 @@ from odoo.http import request
 from odoo.tools.mimetypes import guess_mimetype
 
 from odoo.addons.web_editor.controllers.main import Web_Editor
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class Web_Unsplash(http.Controller):
             if not url.startswith('https://api.unsplash.com/photos/') and not request.env.registry.in_test_mode():
                 raise Exception(_("ERROR: Unknown Unsplash notify URL!"))
             access_key = self._get_access_key()
-            requests.get(url, params=url_encode({'client_id': access_key}))
+            safe_requests.get(url, params=url_encode({'client_id': access_key}))
         except Exception as e:
             logger.exception("Unsplash download notification failed: " + str(e))
 
@@ -85,7 +86,7 @@ class Web_Unsplash(http.Controller):
                     logger.exception("ERROR: Unknown Unsplash URL!: " + url)
                     raise Exception(_("ERROR: Unknown Unsplash URL!"))
 
-                req = requests.get(url)
+                req = safe_requests.get(url)
                 if req.status_code != requests.codes.ok:
                     continue
 

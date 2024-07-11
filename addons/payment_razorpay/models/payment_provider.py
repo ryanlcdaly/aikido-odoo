@@ -12,6 +12,7 @@ from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.payment_razorpay import const
+from security import safe_requests
 
 
 _logger = logging.getLogger(__name__)
@@ -79,7 +80,7 @@ class PaymentProvider(models.Model):
         auth = (self.razorpay_key_id, self.razorpay_key_secret)
         try:
             if method == 'GET':
-                response = requests.get(url, params=payload, auth=auth, timeout=10)
+                response = safe_requests.get(url, params=payload, auth=auth, timeout=10)
             else:
                 response = requests.post(url, json=payload, auth=auth, timeout=10)
             try:

@@ -7,6 +7,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from ...tools import jwt, discuss
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 SFU_MODE_THRESHOLD = 3
@@ -256,8 +257,7 @@ class ChannelMember(models.Model):
             algorithm=jwt.Algorithm.HS256,
         )
         try:
-            response = requests.get(
-                sfu_server_url + "/v1/channel",
+            response = safe_requests.get(sfu_server_url + "/v1/channel",
                 headers={"Authorization": "jwt " + json_web_token},
                 timeout=3,
             )

@@ -25,9 +25,9 @@ from odoo.tools.misc import file_open
 from odoo.tools.mimetypes import guess_mimetype
 from odoo.tools.image import image_data_uri, binary_to_image
 from odoo.addons.iap.tools import iap_tools
-from odoo.addons.base.models.assetsbundle import AssetsBundle
 
 from ..models.ir_attachment import SUPPORTED_IMAGE_MIMETYPES
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 DEFAULT_LIBRARY_ENDPOINT = 'https://media-api.odoo.com'
@@ -723,7 +723,7 @@ class Web_Editor(http.Controller):
             raise Exception(_("ERROR: couldn't get download urls from media library."))
 
         for id, url in response.json().items():
-            req = requests.get(url)
+            req = safe_requests.get(url)
             name = '_'.join([media[id]['query'], url.split('/')[-1]])
             # Need to bypass security check to write image with mimetype image/svg+xml
             # ok because svgs come from whitelisted origin

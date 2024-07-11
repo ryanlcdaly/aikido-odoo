@@ -10,6 +10,7 @@ from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.payment_mercado_pago import const
+from security import safe_requests
 
 
 _logger = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ class PaymentProvider(models.Model):
         headers = {'Authorization': f'Bearer {self.mercado_pago_access_token}'}
         try:
             if method == 'GET':
-                response = requests.get(url, params=payload, headers=headers, timeout=10)
+                response = safe_requests.get(url, params=payload, headers=headers, timeout=10)
             else:
                 response = requests.post(url, json=payload, headers=headers, timeout=10)
                 try:

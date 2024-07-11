@@ -18,6 +18,7 @@ from odoo.addons.http_routing.models.ir_http import slug, url_for
 from odoo.exceptions import RedirectWarning, UserError, AccessError
 from odoo.http import request
 from odoo.tools import html2plaintext, sql
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 
@@ -1116,7 +1117,7 @@ class Slide(models.Model):
                 slide_metadata['image_url'] = thumbnail_url
             else:
                 slide_metadata['image_1920'] = base64.b64encode(
-                    requests.get(thumbnail_url, timeout=3).content
+                    safe_requests.get(thumbnail_url, timeout=3).content
                 )
 
         return slide_metadata, None
@@ -1154,8 +1155,7 @@ class Slide(models.Model):
 
         error_message = False
         try:
-            response = requests.get(
-                'https://www.googleapis.com/drive/v2/files/%s' % self.google_drive_id,
+            response = safe_requests.get('https://www.googleapis.com/drive/v2/files/%s' % self.google_drive_id,
                 timeout=3,
                 params=params
             )
@@ -1191,7 +1191,7 @@ class Slide(models.Model):
                 slide_metadata['image_url'] = thumbnail_url
             else:
                 slide_metadata['image_1920'] = base64.b64encode(
-                    requests.get(thumbnail_url, timeout=3).content
+                    safe_requests.get(thumbnail_url, timeout=3).content
                 )
 
         if self.slide_category == 'document':
@@ -1222,7 +1222,7 @@ class Slide(models.Model):
                 if google_drive_values.get('downloadUrl'):
                     # attempt to download PDF content to extract a completion_time based on the number of pages
                     try:
-                        pdf_response = requests.get(google_drive_values.get('downloadUrl'), timeout=5)
+                        pdf_response = safe_requests.get(google_drive_values.get('downloadUrl'), timeout=5)
                         completion_time = self._get_completion_time_pdf(pdf_response.content)
                         if completion_time:
                             slide_metadata['completion_time'] = completion_time
@@ -1269,8 +1269,7 @@ class Slide(models.Model):
         self.ensure_one()
         error_message = False
         try:
-            response = requests.get(
-                'https://vimeo.com/api/oembed.json?%s' % urls.url_encode({'url': self.video_url}),
+            response = safe_requests.get('https://vimeo.com/api/oembed.json?%s' % urls.url_encode({'url': self.video_url}),
                 timeout=3
             )
             response.raise_for_status()
@@ -1312,7 +1311,7 @@ class Slide(models.Model):
                 slide_metadata['image_url'] = thumbnail_url
             else:
                 slide_metadata['image_1920'] = base64.b64encode(
-                    requests.get(thumbnail_url, timeout=3).content
+                    safe_requests.get(thumbnail_url, timeout=3).content
                 )
 
         return slide_metadata, None

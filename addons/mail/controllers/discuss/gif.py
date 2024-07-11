@@ -1,15 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import requests
 import werkzeug.urls
 
 from odoo.http import request, route, Controller
+from security import safe_requests
 
 
 class DiscussGifController(Controller):
     def _request_gifs(self, endpoint):
-        response = requests.get(
-            f"https://tenor.googleapis.com/v2/{endpoint}", timeout=3
+        response = safe_requests.get(f"https://tenor.googleapis.com/v2/{endpoint}", timeout=3
         )
         response.raise_for_status()
         return response

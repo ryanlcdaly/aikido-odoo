@@ -6,7 +6,6 @@ import json
 import os
 import logging
 import re
-import requests
 import werkzeug.urls
 import werkzeug.utils
 import werkzeug.wrappers
@@ -30,6 +29,7 @@ from odoo.addons.portal.controllers.portal import pager as portal_pager
 from odoo.addons.portal.controllers.web import Home
 from odoo.addons.web.controllers.binary import Binary
 from odoo.addons.website.tools import get_base_domain
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -727,7 +727,7 @@ class Website(Home):
         language = lang.split("_")
         url = "http://google.com/complete/search"
         try:
-            req = requests.get(url, params={
+            req = safe_requests.get(url, params={
                 'ie': 'utf8', 'oe': 'utf8', 'output': 'toolbar', 'q': keywords, 'hl': language[0], 'gl': language[1]})
             req.raise_for_status()
             response = req.content

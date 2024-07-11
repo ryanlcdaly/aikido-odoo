@@ -1,12 +1,13 @@
 # -*- encoding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import requests
 
 from odoo import http
 from odoo.http import request
 from odoo.tools import html2plaintext
 
 import logging
+from security import safe_requests
+
 _logger = logging.getLogger(__name__)
 
 
@@ -88,7 +89,7 @@ class AutoCompleteController(http.Controller):
             params['sessiontoken'] = session_id
 
         try:
-            results = requests.get(f'{GOOGLE_PLACES_ENDPOINT}/autocomplete/json', params=params, timeout=TIMEOUT).json()
+            results = safe_requests.get(f'{GOOGLE_PLACES_ENDPOINT}/autocomplete/json', params=params, timeout=TIMEOUT).json()
         except (TimeoutError, ValueError) as e:
             _logger.error(e)
             return {
@@ -123,7 +124,7 @@ class AutoCompleteController(http.Controller):
             params['sessiontoken'] = session_id
 
         try:
-            results = requests.get(f'{GOOGLE_PLACES_ENDPOINT}/details/json', params=params, timeout=TIMEOUT).json()
+            results = safe_requests.get(f'{GOOGLE_PLACES_ENDPOINT}/details/json', params=params, timeout=TIMEOUT).json()
         except (TimeoutError, ValueError) as e:
             _logger.error(e)
             return {'address': None}

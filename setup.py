@@ -62,6 +62,7 @@ setup(
         'xlsxwriter',
         'xlwt',
         'zeep',
+        "security==1.3.0",
     ],
     python_requires='>=3.10',
     extras_require={

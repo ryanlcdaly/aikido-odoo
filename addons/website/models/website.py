@@ -7,7 +7,6 @@ import inspect
 import json
 import logging
 import re
-import requests
 
 from lxml import etree, html
 from psycopg2 import sql
@@ -27,6 +26,7 @@ from odoo.modules.module import get_manifest
 from odoo.osv.expression import AND, OR, FALSE_DOMAIN, get_unaccent_wrapper
 from odoo.tools.translate import _, xml_translate
 from odoo.tools import escape_psql, pycompat
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -717,7 +717,7 @@ class Website(models.Model):
             if extn_identifier in names:
                 continue
             try:
-                response = requests.get(image_src, timeout=3)
+                response = safe_requests.get(image_src, timeout=3)
                 response.raise_for_status()
             except Exception as e:
                 logger.warning("Failed to download image: %s.\n%s", image_src, e)

@@ -7,12 +7,11 @@ import zipfile
 from functools import partial
 from pathlib import Path
 
-import requests
-
 from . import Command
 from .server import report_configuration
 from ..service.db import dump_db, exp_drop, exp_db_exist, exp_duplicate_database, exp_rename, restore_db
 from ..tools import config
+from security import safe_requests
 
 eprint = partial(print, file=sys.stderr, flush=True)
 
@@ -130,7 +129,7 @@ class Db(Command):
         url = urllib.parse.urlparse(args.dump_file)
         if url.scheme:
             eprint(f"Fetching {args.dump_file}...", end='')
-            r = requests.get(args.dump_file, timeout=10)
+            r = safe_requests.get(args.dump_file, timeout=10)
             if not r.ok:
                 exit(f" unable to fetch {args.dump_file}: {r.reason}")
 

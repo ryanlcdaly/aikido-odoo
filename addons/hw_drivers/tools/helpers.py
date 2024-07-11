@@ -18,12 +18,12 @@ import zipfile
 from threading import Thread
 import time
 import contextlib
-import requests
 import secrets
 
 from odoo import _, http, service
 from odoo.tools.func import lazy_property
 from odoo.tools.misc import file_path
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 
@@ -429,7 +429,7 @@ def download_from_url(download_url, path_to_filename):
     (Example: 'C:\\Program Files\\Odoo\\downloaded_file.zip')
     """
     try:
-        request_response = requests.get(download_url, timeout=60)
+        request_response = safe_requests.get(download_url, timeout=60)
         request_response.raise_for_status()
         write_file(path_to_filename, request_response.content, 'wb')
         _logger.info('Downloaded %s from %s', path_to_filename, download_url)

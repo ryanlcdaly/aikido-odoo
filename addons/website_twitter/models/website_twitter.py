@@ -6,6 +6,7 @@ import logging
 
 import requests
 from odoo import api, fields, models
+from security import safe_requests
 
 API_ENDPOINT = 'https://api.twitter.com'
 API_VERSION = '1.1'
@@ -28,7 +29,7 @@ class WebsiteTwitter(models.Model):
         """Send an authenticated request to the Twitter API."""
         access_token = self._get_access_token(website)
         try:
-            request = requests.get(url, params=params, headers={'Authorization': 'Bearer %s' % access_token}, timeout=URLOPEN_TIMEOUT)
+            request = safe_requests.get(url, params=params, headers={'Authorization': 'Bearer %s' % access_token}, timeout=URLOPEN_TIMEOUT)
             request.raise_for_status()
             return request.json()
         except requests.HTTPError as e:

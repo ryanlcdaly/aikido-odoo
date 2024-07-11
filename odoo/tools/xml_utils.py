@@ -9,6 +9,7 @@ from lxml import etree
 import contextlib
 
 from odoo.exceptions import UserError
+from security import safe_requests
 
 
 _logger = logging.getLogger(__name__)
@@ -180,7 +181,7 @@ def load_xsd_files_from_url(env, url, file_name=None, force_reload=False,
     """
     try:
         _logger.info("Fetching file/archive from given URL: %s", url)
-        response = requests.get(url, timeout=request_max_timeout)
+        response = safe_requests.get(url, timeout=request_max_timeout)
         response.raise_for_status()
     except requests.exceptions.HTTPError as error:
         _logger.warning('HTTP error: %s with the given URL: %s', error, url)

@@ -5,9 +5,9 @@ import base64
 import json
 import logging
 import re
-import requests
 
 from odoo import api, fields, models, tools, _
+from security import safe_requests
 
 _logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ class ResPartner(models.Model):
         if iap_data.get('logo'):
             try:
                 iap_data['image_1920'] = base64.b64encode(
-                    requests.get(iap_data['logo'], timeout=PARTNER_AC_TIMEOUT).content
+                    safe_requests.get(iap_data['logo'], timeout=PARTNER_AC_TIMEOUT).content
                 )
             except Exception:
                 iap_data['image_1920'] = False

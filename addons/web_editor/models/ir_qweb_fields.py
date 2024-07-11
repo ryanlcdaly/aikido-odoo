@@ -17,19 +17,17 @@ import os
 import re
 
 import pytz
-import requests
 from datetime import datetime
 from lxml import etree, html
 from PIL import Image as I
 from werkzeug import urls
-
-import odoo.modules
 
 from odoo import _, api, models, fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import ustr, posix_to_ldml, pycompat
 from odoo.tools import html_escape as escape
 from odoo.tools.misc import file_open, get_lang, babel_locale_parse
+from security import safe_requests
 
 REMOTE_CONNECTION_TIMEOUT = 2.5
 
@@ -504,7 +502,7 @@ class Image(models.AbstractModel):
             #   linking to HTTP images
             # implement drag & drop image upload to mitigate?
 
-            req = requests.get(url, timeout=REMOTE_CONNECTION_TIMEOUT)
+            req = safe_requests.get(url, timeout=REMOTE_CONNECTION_TIMEOUT)
             # PIL needs a seekable file-like image so wrap result in IO buffer
             image = I.open(io.BytesIO(req.content))
             # force a complete load of the image data to validate it
