@@ -27,6 +27,7 @@ from collections import OrderedDict
 from collections.abc import Iterable
 from PIL import Image, ImageFile
 from itertools import islice
+from security import safe_command
 
 # Allow truncated images
 ImageFile.LOAD_TRUNCATED_IMAGES = True
@@ -76,8 +77,7 @@ def _split_table(tree, max_rows):
 wkhtmltopdf_state = 'install'
 wkhtmltopdf_dpi_zoom_ratio = False
 try:
-    process = subprocess.Popen(
-        [_get_wkhtmltopdf_bin(), '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    process = safe_command.run(subprocess.Popen, [_get_wkhtmltopdf_bin(), '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
 except (OSError, IOError):
     _logger.info('You need Wkhtmltopdf to print a pdf version of the reports.')
@@ -483,7 +483,7 @@ class IrActionsReport(models.Model):
 
         try:
             wkhtmltopdf = [_get_wkhtmltopdf_bin()] + command_args + files_command_args + paths + [pdf_report_path]
-            process = subprocess.Popen(wkhtmltopdf, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = safe_command.run(subprocess.Popen, wkhtmltopdf, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = process.communicate()
             err = ustr(err)
 

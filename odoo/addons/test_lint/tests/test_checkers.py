@@ -11,6 +11,7 @@ from odoo import tools
 from odoo.tests.common import TransactionCase
 
 from . import _odoo_checker_sql_injection
+from security import safe_command
 
 try:
     import pylint
@@ -47,8 +48,7 @@ class TestSqlLint(TransactionCase):
             self.addCleanup(os.remove, f.name)
             f.write(dedent(testtext).strip())
 
-        result = run(
-            [pylint_bin,
+        result = safe_command.run(run, [pylint_bin,
              f'--rcfile={os.devnull}',
              '--load-plugins=_odoo_checker_sql_injection',
              '--disable=all',

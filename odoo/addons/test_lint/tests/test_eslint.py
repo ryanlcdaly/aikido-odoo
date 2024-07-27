@@ -10,6 +10,7 @@ from odoo.tests import tagged
 from odoo.tools.misc import file_path
 
 from . import lint_case
+from security import safe_command
 
 _logger = logging.getLogger(__name__)
 
@@ -37,5 +38,5 @@ class TestESLint(lint_case.LintCase):
         _logger.info('Testing %s js files', len(files_to_check))
         # https://eslint.org/docs/user-guide/command-line-interface
         cmd = [eslint, '--no-eslintrc', '-c', eslintrc_path] + files_to_check
-        process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        process = safe_command.run(subprocess.run, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         self.assertEqual(process.returncode, 0, msg=process.stdout.decode())

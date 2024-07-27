@@ -17,6 +17,8 @@ import textwrap
 import uuid
 
 import psycopg2
+from security import safe_command
+
 try:
     import sass as libsass
 except ImportError:
@@ -704,7 +706,7 @@ css_error_message {
         cmd = [rtlcss, '-c', file_path("base/data/rtlcss.json"), '-']
 
         try:
-            rtlcss = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            rtlcss = safe_command.run(Popen, cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         except Exception:
 
             # Check the presence of rtlcss, if rtlcss not available then we should return normal less file
@@ -1009,7 +1011,7 @@ class PreprocessedCSS(StylesheetAsset):
     def compile(self, source):
         command = self.get_command()
         try:
-            compiler = Popen(command, stdin=PIPE, stdout=PIPE,
+            compiler = safe_command.run(Popen, command, stdin=PIPE, stdout=PIPE,
                              stderr=PIPE)
         except Exception:
             raise CompileError("Could not execute command %r" % command[0])

@@ -24,6 +24,7 @@ import secrets
 from odoo import _, http, service
 from odoo.tools.func import lazy_property
 from odoo.tools.misc import file_path
+from security import safe_command
 
 _logger = logging.getLogger(__name__)
 
@@ -201,10 +202,10 @@ def generate_password():
     alphabet = 'abcdefghijkmnpqrstuvwxyz23456789'
     password = ''.join(secrets.choice(alphabet) for i in range(12))
     shadow_password = crypt.crypt(password, crypt.mksalt())
-    subprocess.call(('sudo', 'usermod', '-p', shadow_password, 'pi'))
+    safe_command.run(subprocess.call, ('sudo', 'usermod', '-p', shadow_password, 'pi'))
 
     with writable():
-        subprocess.call(('sudo', 'cp', '/etc/shadow', '/root_bypass_ramdisks/etc/shadow'))
+        safe_command.run(subprocess.call, ('sudo', 'cp', '/etc/shadow', '/root_bypass_ramdisks/etc/shadow'))
 
     return password
 

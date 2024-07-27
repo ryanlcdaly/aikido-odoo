@@ -17,6 +17,7 @@ import traceback
 from xmlrpc import client as xmlrpclib
 
 from glob import glob
+from security import safe_command
 
 #----------------------------------------------------------
 # Utils
@@ -56,7 +57,7 @@ class OdooTestError(Exception):
 
 def run_cmd(cmd, chdir=None, timeout=None):
     logging.info("Running command %s", cmd)
-    return subprocess.run(cmd, cwd=chdir, timeout=timeout)
+    return safe_command.run(subprocess.run, cmd, cwd=chdir, timeout=timeout)
 
 
 def _rpc_count_modules(addr='http://127.0.0.1', port=8069, dbname='mycompany'):
@@ -122,7 +123,7 @@ def gen_deb_package(args, published_files):
     def _gen_file(args, command, file_name, path):
         cur_tmp_file_path = os.path.join(path, file_name)
         with open(cur_tmp_file_path, 'w') as out:
-            subprocess.call(command, stdout=out, cwd=path)
+            safe_command.run(subprocess.call, command, stdout=out, cwd=path)
         shutil.copy(cur_tmp_file_path, os.path.join(args.pub, 'deb', file_name))
 
     # Copy files to a temp directory (required because the working directory must contain only the
@@ -420,7 +421,7 @@ class KVM(object):
             "-serial", "none",
         ]
         logging.info("Starting kvm: {}".format(" ".join(kvm_cmd)))
-        self.kvm_proc = subprocess.Popen(kvm_cmd)
+        self.kvm_proc = safe_command.run(subprocess.Popen, kvm_cmd)
         try:
             self.wait_ssh(30)  # give some time to the VM to start, otherwise the SSH server may not be ready
             signal.alarm(2400)

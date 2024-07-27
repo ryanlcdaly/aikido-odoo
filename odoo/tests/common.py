@@ -29,6 +29,8 @@ import unittest
 import warnings
 from collections import defaultdict, deque
 from concurrent.futures import Future, CancelledError, wait
+from security import safe_command
+
 try:
     from concurrent.futures import InvalidStateError
 except ImportError:
@@ -1003,7 +1005,7 @@ class ChromeBrowser:
             preexec = None
 
         # pylint: disable=subprocess-popen-preexec-fn
-        return subprocess.Popen(cmd, stderr=subprocess.DEVNULL, preexec_fn=preexec)
+        return safe_command.run(subprocess.Popen, cmd, stderr=subprocess.DEVNULL, preexec_fn=preexec)
 
     def _spawn_chrome(self, cmd):
         proc = self._chrome_without_limit(cmd)
@@ -1409,7 +1411,7 @@ which leads to stray network requests and inconsistencies."""
                     duration = end_time - self.screencast_frames[i]['timestamp']
                     concat_file.write("file '%s'\nduration %s\n" % (frame_file_path, duration))
                 concat_file.write("file '%s'" % frame_file_path)  # needed by the concat plugin
-            r = subprocess.run([ffmpeg_path, '-intra', '-f', 'concat','-safe', '0', '-i', concat_script_path, '-pix_fmt', 'yuv420p', outfile])
+            r = safe_command.run(subprocess.run, [ffmpeg_path, '-intra', '-f', 'concat','-safe', '0', '-i', concat_script_path, '-pix_fmt', 'yuv420p', outfile])
             self._logger.log(25, 'Screencast in: %s', outfile)
         else:
             outfile = outfile.strip('.mp4')

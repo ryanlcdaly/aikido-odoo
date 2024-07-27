@@ -52,6 +52,7 @@ from .cache import *
 from .config import config
 from .parse_version import parse_version
 from .which import which
+from security import safe_command
 
 _logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ def _exec_pipe(prog, args, env=None):
     # on win32, passing close_fds=True is not compatible
     # with redirecting std[in/err/out]
     close_fds = os.name=="posix"
-    pop = subprocess.Popen(cmd, bufsize=-1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=close_fds, env=env)
+    pop = safe_command.run(subprocess.Popen, cmd, bufsize=-1, stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=close_fds, env=env)
     return pop.stdin, pop.stdout
 
 def exec_command_pipe(name, *args):
@@ -131,7 +132,7 @@ def exec_pg_command(name, *args):
     prog = find_pg_tool(name)
     env = exec_pg_environ()
     args2 = (prog,) + args
-    rc = subprocess.call(args2, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    rc = safe_command.run(subprocess.call, args2, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     if rc:
         raise Exception('Postgres subprocess %s error %s' % (args2, rc))
 

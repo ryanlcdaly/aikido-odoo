@@ -28,6 +28,7 @@ import odoo.tools
 from odoo.sql_db import db_connect
 from odoo.release import version_info
 from odoo.tools import find_pg_tool, exec_pg_environ
+from security import safe_command
 
 _logger = logging.getLogger(__name__)
 
@@ -262,7 +263,7 @@ def dump_db(db_name, stream, backup_format='zip'):
                 with db.cursor() as cr:
                     json.dump(dump_db_manifest(cr), fh, indent=4)
             cmd.insert(-1, '--file=' + os.path.join(dump_dir, 'dump.sql'))
-            subprocess.run(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
+            safe_command.run(subprocess.run, cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, check=True)
             if stream:
                 odoo.tools.osutil.zip_dir(dump_dir, stream, include_dir=False, fnct_sort=lambda file_name: file_name != 'dump.sql')
             else:
@@ -272,7 +273,7 @@ def dump_db(db_name, stream, backup_format='zip'):
                 return t
     else:
         cmd.insert(-1, '--format=c')
-        stdout = subprocess.Popen(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE).stdout
+        stdout = safe_command.run(subprocess.Popen, cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE).stdout
         if stream:
             shutil.copyfileobj(stdout, stream)
         else:
@@ -323,8 +324,7 @@ def restore_db(db, dump_file, copy=False, neutralize_database=False):
             pg_cmd = 'pg_restore'
             pg_args = ['--no-owner', dump_file]
 
-        r = subprocess.run(
-            [find_pg_tool(pg_cmd), '--dbname=' + db, *pg_args],
+        r = safe_command.run(subprocess.run, [find_pg_tool(pg_cmd), '--dbname=' + db, *pg_args],
             env=exec_pg_environ(),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,

@@ -3,6 +3,8 @@
 
 import logging
 import platform
+from security import safe_command
+
 try:
     import pylint
 except ImportError:
@@ -89,8 +91,7 @@ class TestPyLint(TransactionCase):
 
         try:
             pylint_bin = tools.which('pylint')
-            process = subprocess.Popen(
-                [pylint_bin] + options + paths,
+            process = safe_command.run(subprocess.Popen, [pylint_bin] + options + paths,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 env=env,

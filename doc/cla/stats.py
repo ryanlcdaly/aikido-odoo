@@ -7,6 +7,7 @@ import subprocess
 import glob
 import re
 import pprint
+from security import safe_command
 
 
 cla_glob = "doc/cla/*/*.md"
@@ -26,7 +27,7 @@ def blamestat(ext='py'):
     okl = []
     ko = 0
     kol = []
-    p = subprocess.Popen("git ls-tree -r -z --name-only HEAD | grep -z '.%s$' | xargs -0 -n1 git blame --line-porcelain HEAD |grep  '^author-mail ' |sort |uniq -c|sort -nr" % ext, shell=True, stdout = subprocess.PIPE)
+    p = safe_command.run(subprocess.Popen, "git ls-tree -r -z --name-only HEAD | grep -z '.%s$' | xargs -0 -n1 git blame --line-porcelain HEAD |grep  '^author-mail ' |sort |uniq -c|sort -nr" % ext, shell=True, stdout = subprocess.PIPE)
     for i in p.stdout.read().split('\n'):
         mo = re.search('(\d+) author-mail <([^ @<]+@[^ @<]+)>',i)
         if mo:
