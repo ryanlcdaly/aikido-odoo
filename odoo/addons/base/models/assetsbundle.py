@@ -419,7 +419,7 @@ class AssetsBundle(object):
         :return ir.attachment representing the content of the bundle XML
         """
         template_dict = OrderedDict()
-        parser = etree.XMLParser(ns_clean=True, recover=True, remove_comments=True)
+        parser = etree.XMLParser(ns_clean=True, recover=True, remove_comments=True, resolve_entities=False)
 
         for asset in self.templates:
             # Load content.

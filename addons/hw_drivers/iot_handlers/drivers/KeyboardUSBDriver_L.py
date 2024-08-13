@@ -97,7 +97,7 @@ class KeyboardUSBDriver(Driver):
 
     @classmethod
     def load_layouts_list(cls):
-        tree = etree.parse("/usr/share/X11/xkb/rules/base.xml", etree.XMLParser(ns_clean=True, recover=True))
+        tree = etree.parse("/usr/share/X11/xkb/rules/base.xml", etree.XMLParser(ns_clean=True, recover=True, resolve_entities=False))
         layouts = tree.xpath("//layout")
         for layout in layouts:
             layout_name = layout.xpath("./configItem/name")[0].text

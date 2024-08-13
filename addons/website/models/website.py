@@ -1637,7 +1637,7 @@ class Website(models.Model):
         :return text extracted from the html
         """
         # lxml requires one single root element
-        tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True))
+        tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True, resolve_entities=False))
         return ' '.join(tree.itertext())
 
     def _search_get_details(self, search_type, order, options):
