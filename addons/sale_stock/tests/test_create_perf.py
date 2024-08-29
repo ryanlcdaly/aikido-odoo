@@ -3,7 +3,6 @@
 
 from decorator import decorator
 import logging
-import random
 import time
 
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
@@ -11,6 +10,7 @@ from odoo.fields import Command
 
 from odoo.tests import tagged
 from odoo.tests.common import users, warmup
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -183,7 +183,7 @@ class TestPERF(TransactionCaseWithUserDemo):
             ] + [
                 (0, 0, {
                     'product_id': product.id,
-                    'product_uom_qty': random.random()
+                    'product_uom_qty': secrets.SystemRandom().random()
                 }) for product in self.products
             ],
         } for i in range(self.ENTITIES)]

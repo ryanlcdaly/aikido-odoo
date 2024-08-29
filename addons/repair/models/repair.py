@@ -1,11 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import api, Command, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare, float_is_zero, clean_context
 from odoo.tools.misc import format_date, groupby
+import secrets
 
 MAP_REPAIR_TO_PICKING_LOCATIONS = {
     'location_id': 'default_location_src_id',
@@ -579,7 +579,7 @@ class RepairTags(models.Model):
     _description = "Repair Tags"
 
     def _get_default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char('Tag Name', required=True)
     color = fields.Integer(string='Color Index', default=_get_default_color)

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import api, fields, models, SUPERUSER_ID
 from odoo.osv import expression
+import secrets
 
 
 class ProjectTags(models.Model):
@@ -14,7 +14,7 @@ class ProjectTags(models.Model):
     _order = "name"
 
     def _get_default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char('Name', required=True, translate=True)
     color = fields.Integer(string='Color', default=_get_default_color,

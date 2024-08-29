@@ -1,7 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-from random import randint
 
 from odoo import fields, models
+import secrets
 
 
 class MandatoryDay(models.Model):
@@ -13,7 +13,7 @@ class MandatoryDay(models.Model):
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
-    color = fields.Integer(default=lambda dummy: randint(1, 11))
+    color = fields.Integer(default=lambda dummy: secrets.SystemRandom().randint(1, 11))
     resource_calendar_id = fields.Many2one(
         'resource.calendar', 'Working Hours',
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")

@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import itertools
 import logging
-import random
 import re
 import psycopg2
 from ast import literal_eval
@@ -19,6 +18,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import pycompat, unique, OrderedSet
 from odoo.tools.safe_eval import safe_eval, datetime, dateutil, time
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -2205,7 +2205,7 @@ class IrModelData(models.Model):
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         self.ensure_one()
-        rand = "%04x" % random.getrandbits(16)
+        rand = "%04x" % secrets.SystemRandom().getrandbits(16)
         default = dict(default or {}, name="%s_%s" % (self.name, rand))
         return super().copy(default)
 

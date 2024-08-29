@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -10,6 +9,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import float_is_zero
+import secrets
 
 
 class SaleOrder(models.Model):
@@ -386,7 +386,7 @@ class SaleOrder(models.Model):
                     )
                 )
 
-        return random.sample(all_accessory_products, len(all_accessory_products))
+        return secrets.SystemRandom().sample(all_accessory_products, len(all_accessory_products))
 
     def action_recovery_email_send(self):
         for order in self:

@@ -5,12 +5,12 @@ from dateutil import relativedelta
 from datetime import timedelta, datetime
 from functools import partial
 from pytz import timezone
-from random import randint
 
 from odoo import api, exceptions, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.addons.resource.models.utils import make_aware, Intervals
 from odoo.tools.float_utils import float_compare
+import secrets
 
 
 class MrpWorkcenter(models.Model):
@@ -311,7 +311,7 @@ class WorkcenterTag(models.Model):
     _order = 'name'
 
     def _get_default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char("Tag Name", required=True)
     color = fields.Integer("Color Index", default=_get_default_color)

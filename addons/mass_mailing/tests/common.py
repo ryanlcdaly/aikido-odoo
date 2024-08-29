@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
-import random
 import re
 import werkzeug
 
@@ -12,6 +11,7 @@ from odoo import tools
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mail.tests.common import MailCase, MailCommon, mail_new_test_user
 from odoo.sql_db import Cursor
+import secrets
 
 
 class MassMailCase(MailCase, MockLinkTracker):
@@ -239,7 +239,7 @@ class MassMailCase(MailCase, MockLinkTracker):
 
                 self.env['link.tracker.click'].sudo().add_click(
                     code,
-                    ip='100.200.300.%3f' % random.random(),
+                    ip='100.200.300.%3f' % secrets.SystemRandom().random(),
                     country_code='BE',
                     mailing_trace_id=trace.id
                 )
@@ -283,7 +283,7 @@ class MassMailCase(MailCase, MockLinkTracker):
             fname = 'email_from'
         else:
             fname = 'email'
-        randomized = random.random()
+        randomized = secrets.SystemRandom().random()
         # Cursor.now() uses transaction's timestamp and not datetime lib -> freeze_time
         # is not sufficient
         with patch.object(Cursor, 'now', lambda *args, **kwargs: dt):

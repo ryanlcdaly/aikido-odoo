@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-import random
 
 from babel.dates import format_date
 from datetime import date
@@ -11,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.release import version
+import secrets
 
 
 class CrmTeam(models.Model):
@@ -392,5 +392,5 @@ class CrmTeam(models.Model):
             for value in values:
                 value['type'] = 'o_sample_data'
                 # we use unrealistic values for the sample data
-                value['value'] = random.randint(0, 20)
+                value['value'] = secrets.SystemRandom().randint(0, 20)
         return [{'values': values, 'area': True, 'title': graph_title, 'key': graph_key, 'color': color}]

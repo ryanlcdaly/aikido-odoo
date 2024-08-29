@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import itertools
-import random
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields
 from odoo.addons.mail.tests import common as mail_test
+import secrets
 
 
 class TestDigestCommon(mail_test.MailCommon):
@@ -64,8 +64,8 @@ class TestDigestCommon(mail_test.MailCommon):
             (7, (7 * 24, 27 * 24)),
         ]:
             for __ in range(count):
-                create_date = now - relativedelta(hours=random.randint(low + 1, high - 1))
-                messages += random.choice(partners).message_post(
+                create_date = now - relativedelta(hours=secrets.SystemRandom().randint(low + 1, high - 1))
+                messages += secrets.choice(partners).message_post(
                     author_id=cls.partner_admin.id,
                     body=f"Awesome Partner! ({next(counter)})",
                     email_from=cls.partner_admin.email_formatted,

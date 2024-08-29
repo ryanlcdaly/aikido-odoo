@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 
 from odoo.addons.crm.tests.test_crm_lead_assignment import TestLeadAssignCommon
 from odoo.tests.common import tagged
 from odoo.tools import mute_logger
+import secrets
 
 
 @tagged('lead_assign', 'crm_performance', 'post_install', '-at_install')
@@ -26,7 +26,7 @@ class TestLeadAssignPerf(TestLeadAssignCommon):
         """ Test assign process with duplicates on partner. Allow to ensure notably
         that de duplication is effectively performed. """
         # fix the seed and avoid randomness
-        random.seed(1940)
+        secrets.SystemRandom().seed(1940)
 
         leads = self._create_leads_batch(
             lead_type='lead',
@@ -72,7 +72,7 @@ class TestLeadAssignPerf(TestLeadAssignCommon):
     @mute_logger('odoo.models.unlink', 'odoo.addons.crm.models.crm_team', 'odoo.addons.crm.models.crm_team_member')
     def test_assign_perf_no_duplicates(self):
         # fix the seed and avoid randomness
-        random.seed(1945)
+        secrets.SystemRandom().seed(1945)
 
         leads = self._create_leads_batch(
             lead_type='lead',
@@ -117,7 +117,7 @@ class TestLeadAssignPerf(TestLeadAssignCommon):
         """ Test assignment on a more high volume oriented test set in order to
         have more insights on query counts. """
         # fix the seed and avoid randomness
-        random.seed(1871)
+        secrets.SystemRandom().seed(1871)
 
         # create leads enough to have interesting counters
         _lead_count, _email_dup_count, _partner_count = 600, 50, 150

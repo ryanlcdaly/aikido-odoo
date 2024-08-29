@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 import re
 import werkzeug
 
@@ -9,6 +8,7 @@ from odoo import tools
 from odoo.addons.link_tracker.tests.common import MockLinkTracker
 from odoo.addons.mass_mailing.tests.common import MassMailCommon
 from odoo.addons.sms.tests.common import SMSCase, SMSCommon
+import secrets
 
 
 class MassSMSCase(SMSCase, MockLinkTracker):
@@ -161,7 +161,7 @@ class MassSMSCase(SMSCase, MockLinkTracker):
 
                 self.env['link.tracker.click'].sudo().add_click(
                     code,
-                    ip='100.200.300.%3f' % random.random(),
+                    ip='100.200.300.%3f' % secrets.SystemRandom().random(),
                     country_code='BE',
                     mailing_trace_id=trace_id
                 )

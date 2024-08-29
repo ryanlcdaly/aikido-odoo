@@ -3,7 +3,6 @@
 
 import datetime
 import logging
-import random
 import threading
 
 from ast import literal_eval
@@ -13,6 +12,7 @@ from odoo import api, exceptions, fields, models, _
 from odoo.osv import expression
 from odoo.tools import float_compare, float_round
 from odoo.tools.safe_eval import safe_eval
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -489,7 +489,7 @@ class Team(models.Model):
         leads_done_ids, lead_unlink_ids, counter = set(), set(), 0
         while population:
             counter += 1
-            team = random.choices(population, weights=weights, k=1)[0]
+            team = secrets.SystemRandom().choices(population, weights=weights, k=1)[0]
 
             # filter remaining leads, remove team if no more leads for it
             teams_data[team]["leads"] = teams_data[team]["leads"].filtered(lambda l: l.id not in leads_done_ids).exists()

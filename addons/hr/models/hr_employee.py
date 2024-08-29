@@ -4,7 +4,6 @@
 import base64
 from pytz import timezone, UTC
 from datetime import datetime, time
-from random import choice
 from string import digits
 from werkzeug.urls import url_encode
 from dateutil.relativedelta import relativedelta
@@ -14,6 +13,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, AccessError
 from odoo.osv import expression
 from odoo.tools import format_date
+import secrets
 
 
 class HrEmployeePrivate(models.Model):
@@ -497,7 +497,7 @@ class HrEmployeePrivate(models.Model):
 
     def generate_random_barcode(self):
         for employee in self:
-            employee.barcode = '041'+"".join(choice(digits) for i in range(9))
+            employee.barcode = '041'+"".join(secrets.choice(digits) for i in range(9))
 
     def _get_tz(self):
         # Finds the first valid timezone in his tz, his work hours tz,

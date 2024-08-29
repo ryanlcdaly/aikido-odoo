@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import json
-import random
 import uuid
 from collections import defaultdict
 
@@ -12,6 +11,7 @@ from odoo import api, exceptions, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import is_html_empty
+import secrets
 
 
 class Survey(models.Model):
@@ -36,7 +36,7 @@ class Survey(models.Model):
         for digits_count in range(4, 10):
             range_lower_bound = 1 * (10 ** (digits_count - 1))
             range_upper_bound = (range_lower_bound * 10) - 1
-            code_candidates = set([str(random.randint(range_lower_bound, range_upper_bound)) for i in range(20)])
+            code_candidates = set([str(secrets.SystemRandom().randint(range_lower_bound, range_upper_bound)) for i in range(20)])
             colliding_codes = self.sudo().search_read(
                 [('session_code', 'in', list(code_candidates))],
                 ['session_code']
@@ -557,7 +557,7 @@ class Survey(models.Model):
                 questions |= page.question_ids
             else:
                 if page.random_questions_count > 0 and len(page.question_ids) > page.random_questions_count:
-                    questions = questions.concat(*random.sample(page.question_ids, page.random_questions_count))
+                    questions = questions.concat(*secrets.SystemRandom().sample(page.question_ids, page.random_questions_count))
                 else:
                     questions |= page.question_ids
 

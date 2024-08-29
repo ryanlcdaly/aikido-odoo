@@ -3,13 +3,13 @@
 
 from datetime import timedelta
 from pytz import utc
-from random import randint
 
 from odoo import api, fields, models, tools
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.osv import expression
 from odoo.tools.mail import is_html_empty
 from odoo.tools.translate import _, html_translate
+import secrets
 
 
 class Track(models.Model):
@@ -605,7 +605,7 @@ class Track(models.Model):
                  not track.wishlisted_by_default,
                  len(track.tag_ids & self.tag_ids),
                  track.location_id == self.location_id,
-                 randint(0, 20),
+                 secrets.SystemRandom().randint(0, 20),
                 ), reverse=True
         )
 

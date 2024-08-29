@@ -3,7 +3,6 @@
 
 from ast import literal_eval
 from collections import OrderedDict
-from random import randint, sample
 from werkzeug.exceptions import NotFound, Forbidden
 
 from odoo import exceptions, http
@@ -11,6 +10,7 @@ from odoo.addons.website_event.controllers.main import WebsiteEventController
 from odoo.http import request
 from odoo.osv import expression
 from odoo.tools import format_duration
+import secrets
 
 
 class ExhibitorController(WebsiteEventController):
@@ -93,9 +93,9 @@ class ExhibitorController(WebsiteEventController):
             if is_event_user:
                 published_sponsors = sponsors.filtered(lambda s: s.website_published)
                 unpublished_sponsors = sponsors - published_sponsors
-                random_sponsors = sample(published_sponsors, len(published_sponsors)) + sample(unpublished_sponsors, len(unpublished_sponsors))
+                random_sponsors = secrets.SystemRandom().sample(published_sponsors, len(published_sponsors)) + secrets.SystemRandom().sample(unpublished_sponsors, len(unpublished_sponsors))
             else:
-                random_sponsors = sample(sponsors, len(sponsors))
+                random_sponsors = secrets.SystemRandom().sample(sponsors, len(sponsors))
             sponsor_categories.append({
                 'sponsorship': sponsor_category,
                 'sponsors': random_sponsors,
@@ -156,7 +156,7 @@ class ExhibitorController(WebsiteEventController):
             sponsor.is_in_opening_hours,
             sponsor.partner_id.country_id == current_country,
             -1 * sponsor.sponsor_type_id.sequence,
-            randint(0, 20)
+            secrets.SystemRandom().randint(0, 20)
         ), reverse=True)
 
         option_widescreen = options.get('widescreen', False)

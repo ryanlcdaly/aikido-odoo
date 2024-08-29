@@ -5,12 +5,12 @@ import datetime
 import logging
 import math
 import threading
-import random
 
 from ast import literal_eval
 
 from odoo import api, exceptions, fields, models, _
 from odoo.osv import expression
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -158,7 +158,7 @@ class TeamMember(models.Model):
         commit_bundle_size = int(self.env['ir.config_parameter'].sudo().get_param('crm.assignment.commit.bundle', 100))
         while population and any(weights):
             counter += 1
-            member_id = random.choices(population, weights=weights, k=1)[0]
+            member_id = secrets.SystemRandom().choices(population, weights=weights, k=1)[0]
             member_index = population.index(member_id)
             member_data = members_data[member_id]
 

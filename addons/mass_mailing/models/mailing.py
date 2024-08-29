@@ -7,7 +7,6 @@ import hmac
 import io
 import logging
 import lxml
-import random
 import re
 import requests
 import threading
@@ -23,6 +22,7 @@ from odoo.addons.base_import.models.base_import import ImportValidationError
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools.float_utils import float_round
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -1000,7 +1000,7 @@ class MassMailing(models.Model):
             remaining = set(res_ids).difference(already_mailed)
             if topick > len(remaining) or (len(remaining) > 0 and topick == 0):
                 topick = len(remaining)
-            res_ids = random.sample(sorted(remaining), topick)
+            res_ids = secrets.SystemRandom().sample(sorted(remaining), topick)
         return res_ids
 
     def _get_remaining_recipients(self):
@@ -1243,7 +1243,7 @@ class MassMailing(models.Model):
             [('group_id.category_id', '=', self.env.ref('base.module_category_marketing_email_marketing').id)]
         )
         if random_tip:
-            random_tip = random.choice(random_tip).tip_description
+            random_tip = secrets.choice(random_tip).tip_description
 
         formatted_date = tools.format_datetime(
             self.env, self.sent_date, self.user_id.tz, 'MMM dd, YYYY', self.user_id.lang

@@ -22,6 +22,7 @@ from werkzeug import urls
 import odoo
 from odoo.loglevels import ustr
 from odoo.tools import misc
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -524,7 +525,7 @@ def generate_tracking_message_id(res_id):
     try:
         rnd = random.SystemRandom().random()
     except NotImplementedError:
-        rnd = random.random()
+        rnd = secrets.SystemRandom().random()
     rndstr = ("%.15f" % rnd)[2:]
     return "<%s.%.15f-openerp-%s@%s>" % (rndstr, time.time(), res_id, socket.gethostname())
 

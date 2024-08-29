@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import psycopg2
-import random
 import socket
 import struct
 import selectors
@@ -30,6 +29,7 @@ from odoo.service import model as service_model
 from odoo.service.server import CommonServer
 from odoo.service.security import check_session
 from odoo.tools import config
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def acquire_cursor(db):
     for tryno in range(1, MAX_TRY_ON_POOL_ERROR + 1):
         with suppress(PoolError):
             return odoo.registry(db).cursor()
-        time.sleep(random.uniform(DELAY_ON_POOL_ERROR, DELAY_ON_POOL_ERROR * tryno))
+        time.sleep(secrets.SystemRandom().uniform(DELAY_ON_POOL_ERROR, DELAY_ON_POOL_ERROR * tryno))
     raise PoolError('Failed to acquire cursor after %s retries' % MAX_TRY_ON_POOL_ERROR)
 
 
@@ -678,7 +678,7 @@ class TimeoutManager:
         # Custom keep alive timeout for each TimeoutManager to avoid multiple
         # connections timing out at the same time.
         self._keep_alive_timeout = (
-            type(self).KEEP_ALIVE_TIMEOUT + random.uniform(0, type(self).KEEP_ALIVE_TIMEOUT / 2)
+            type(self).KEEP_ALIVE_TIMEOUT + secrets.SystemRandom().uniform(0, type(self).KEEP_ALIVE_TIMEOUT / 2)
         )
         self.timeout_reason = None
         # Start time recorded when we started awaiting an answer to a

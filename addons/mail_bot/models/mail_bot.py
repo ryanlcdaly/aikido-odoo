@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import itertools
-import random
 
 from markupsafe import Markup
 from odoo import models, _
+import secrets
 
 class MailBot(models.AbstractModel):
     _name = 'mail.bot'
@@ -80,7 +80,7 @@ class MailBot(models.AbstractModel):
                 elif odoobot_state == 'onboarding_ping':
                     self.env.user.odoobot_failed = True
                     return Markup(_("Sorry, I am not listening. To get someone's attention, <b>ping him</b>. Write <span class=\"o_odoobot_command\">@OdooBot</span> and select me."))
-                return random.choice([
+                return secrets.choice([
                     Markup(_("I'm not smart enough to answer your question.<br/>To follow my guide, ask: <span class=\"o_odoobot_command\">start the tour</span>.")),
                     _("Hmmm..."),
                     _("I'm afraid I don't understand. Sorry!"),

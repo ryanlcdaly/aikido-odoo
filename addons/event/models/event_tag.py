@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import api, fields, models
+import secrets
 
 
 class EventTagCategory(models.Model):
@@ -30,7 +30,7 @@ class EventTag(models.Model):
     _order = "category_sequence, sequence, id"
 
     def _default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char("Name", required=True, translate=True)
     sequence = fields.Integer('Sequence', default=0)

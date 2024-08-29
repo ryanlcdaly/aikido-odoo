@@ -9,13 +9,13 @@ from unittest.mock import patch
 from unittest.mock import DEFAULT
 
 import pytz
-import random
 
 from odoo import fields, exceptions, tests
 from odoo.addons.mail.tests.common import mail_new_test_user, MailCommon
 from odoo.addons.test_mail.models.test_mail_models import MailTestActivity
 from odoo.tools import mute_logger
 from odoo.tests.common import Form, users
+import secrets
 
 
 class TestActivityCommon(MailCommon):
@@ -417,7 +417,7 @@ class TestActivityMixin(TestActivityCommon):
             test_users += mail_new_test_user(self.env, name=f'test_user_{i}', login=f'test_password_{i}')
         for user in test_users:
             self.test_record.activity_schedule(user_id=user.id)
-        archived_users = self.env['res.users'].browse(map(lambda x: x.id, random.sample(test_users, 2)))  # pick 2 users to archive
+        archived_users = self.env['res.users'].browse(map(lambda x: x.id, secrets.SystemRandom().sample(test_users, 2)))  # pick 2 users to archive
         archived_users.action_archive()
         active_users = test_users - archived_users
 

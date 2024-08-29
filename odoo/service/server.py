@@ -7,7 +7,6 @@ import logging
 import os
 import os.path
 import platform
-import random
 import select
 import signal
 import socket
@@ -23,6 +22,7 @@ import werkzeug.serving
 from werkzeug.debug import DebuggedApplication
 
 from ..tests import loader
+import secrets
 
 if os.name == 'posix':
     # Unix only for workers
@@ -1062,7 +1062,7 @@ class Worker(object):
         self.setproctitle()
         _logger.info("Worker %s (%s) alive", self.__class__.__name__, self.pid)
         # Reseed the random number generator
-        random.seed()
+        secrets.SystemRandom().seed()
         if self.multi.socket:
             # Prevent fd inheritance: close_on_exec
             flags = fcntl.fcntl(self.multi.socket, fcntl.F_GETFD) | fcntl.FD_CLOEXEC

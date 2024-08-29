@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-import random
 import threading
 
 from collections import namedtuple
@@ -13,6 +12,7 @@ from odoo import api, fields, models, tools
 from odoo.tools import exception_to_unicode
 from odoo.tools.translate import _
 from odoo.exceptions import MissingError, ValidationError
+import secrets
 
 
 _logger = logging.getLogger(__name__)
@@ -215,7 +215,7 @@ class EventMailScheduler(models.Model):
     @api.model
     def _warn_template_error(self, scheduler, exception):
         # We warn ~ once by hour ~ instead of every 10 min if the interval unit is more than 'hours'.
-        if random.random() < 0.1666 or scheduler.interval_unit in ('now', 'hours'):
+        if secrets.SystemRandom().random() < 0.1666 or scheduler.interval_unit in ('now', 'hours'):
             ex_s = exception_to_unicode(exception)
             try:
                 event, template = scheduler.event_id, scheduler.template_ref

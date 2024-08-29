@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import fields, models
+import secrets
 
 
 class EmployeeCategory(models.Model):
@@ -12,7 +12,7 @@ class EmployeeCategory(models.Model):
     _description = "Employee Category"
 
     def _get_default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char(string="Tag Name", required=True)
     color = fields.Integer(string='Color Index', default=_get_default_color)

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 import requests
 import string
 
@@ -12,6 +11,7 @@ from odoo import tools, models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
 from odoo.addons.mail.tools import link_preview
+import secrets
 
 
 class LinkTracker(models.Model):
@@ -256,7 +256,7 @@ class LinkTrackerCode(models.Model):
         size = 3
         while True:
             code_propositions = [
-                ''.join(random.choices(string.ascii_letters + string.digits, k=size))
+                ''.join(secrets.SystemRandom().choices(string.ascii_letters + string.digits, k=size))
                 for __ in range(n)
             ]
 

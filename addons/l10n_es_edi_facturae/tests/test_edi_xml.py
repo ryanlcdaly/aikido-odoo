@@ -1,5 +1,4 @@
 import logging
-import random
 from base64 import b64encode
 from datetime import datetime
 from hashlib import sha1
@@ -13,6 +12,7 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import file_open
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
         })
 
     def test_generate_signed_xml(self, date=None):
-        random.seed(42)
+        secrets.SystemRandom().seed(42)
         date = date or self.frozen_today
         # We need to patch dates and uuid to ensure the signature's consistency
         with freeze_time(date), \
@@ -130,7 +130,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
     def test_cannot_generate_unsigned_xml(self):
         """ Test that no valid certificate prevents a xml generation"""
         self.certificate.unlink()
-        random.seed(42)
+        secrets.SystemRandom().seed(42)
         with freeze_time(self.frozen_today), \
                 patch(f"{self.certificate_module}.fields.datetime.now", lambda x=None: self.frozen_today), \
                 patch(f"{self.certificate_module}.sha1", lambda x: sha1()):
@@ -176,7 +176,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
             self.assertXmlTreeEqual(lxml.etree.fromstring(generated_file), expected_xml)
 
     def test_in_invoice(self):
-        random.seed(42)
+        secrets.SystemRandom().seed(42)
         # We need to patch dates and uuid to ensure the signature's consistency
         with freeze_time(self.frozen_today), \
                 patch(f"{self.certificate_module}.fields.datetime.now", lambda x=None: self.frozen_today), \
@@ -202,7 +202,7 @@ class TestEdiFacturaeXmls(AccountTestInvoicingCommon):
             self.assertXmlTreeEqual(lxml.etree.fromstring(generated_file), expected_xml)
 
     def test_refund_invoice(self):
-        random.seed(42)
+        secrets.SystemRandom().seed(42)
         # We need to patch dates and uuid to ensure the signature's consistency
 
         with freeze_time(self.frozen_today), \

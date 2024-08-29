@@ -1,6 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
-import random
 import threading
 import time
 from collections.abc import Mapping, Sequence
@@ -16,6 +15,7 @@ from odoo.tools import DotDict
 from odoo.tools.translate import _, translate_sql_constraint
 from . import security
 from ..tools import lazy
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -156,7 +156,7 @@ def retrying(func, env):
                     _logger.info("%s, maximum number of tries reached!", errorcodes.lookup(exc.pgcode))
                     raise
 
-                wait_time = random.uniform(0.0, 2 ** tryno)
+                wait_time = secrets.SystemRandom().uniform(0.0, 2 ** tryno)
                 _logger.info("%s, %s tries left, try again in %.04f sec...", errorcodes.lookup(exc.pgcode), tryleft, wait_time)
                 time.sleep(wait_time)
         else:

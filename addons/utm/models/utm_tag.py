@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import fields, models
+import secrets
 
 
 class UtmTag(models.Model):
@@ -14,7 +14,7 @@ class UtmTag(models.Model):
     _order = 'name'
 
     def _default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     name = fields.Char(required=True, translate=True)
     color = fields.Integer(

@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.addons.website.tests.test_performance import UtilPerf
-import random
+import secrets
 
 
 class TestBlogPerformance(UtilPerf):
@@ -62,10 +62,10 @@ class TestBlogPerformance(UtilPerf):
         BlogTag = self.env['blog.tag']
         blogs = self.env['blog.blog'].search([])
         blog_tags = BlogTag.create([{'name': 'New Blog Tag Test %s' % i} for i in range(1, 50)])
-        BlogPost.create([{'name': 'New Blog Post Test %s' % i, 'is_published': True, 'blog_id': blogs[random.randint(0, 1)].id} for i in range(1, 100)])
+        BlogPost.create([{'name': 'New Blog Post Test %s' % i, 'is_published': True, 'blog_id': blogs[secrets.SystemRandom().randint(0, 1)].id} for i in range(1, 100)])
         blog_posts = BlogPost.search([])
         for blog_post in blog_posts:
-            blog_post.write({'tag_ids': [[6, 0, random.choices(blog_tags.ids, k=random.randint(0, len(blog_tags)))]]})
+            blog_post.write({'tag_ids': [[6, 0, secrets.SystemRandom().choices(blog_tags.ids, k=secrets.SystemRandom().randint(0, len(blog_tags)))]]})
 
         self.assertLessEqual(self._get_url_hot_query('/blog'), 29)
         self.assertLessEqual(self._get_url_hot_query('/blog', cache=False), 71)

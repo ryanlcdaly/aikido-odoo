@@ -3,7 +3,6 @@ from babel.dates import format_datetime, format_date
 from collections import defaultdict
 from datetime import datetime, timedelta
 import json
-import random
 
 from odoo import models, api, _, fields
 from odoo.exceptions import UserError
@@ -11,6 +10,7 @@ from odoo.osv import expression
 from odoo.release import version
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from odoo.tools.misc import formatLang, format_date as odoo_format_date, get_lang
+import secrets
 
 
 def group_by_journal(vals_list):
@@ -206,7 +206,7 @@ class account_journal(models.Model):
             if is_sample_data:
                 for i in range(30, 0, -5):
                     current_date = today + timedelta(days=-i)
-                    data.append(build_graph_data(current_date, random.randint(-5, 15), currency))
+                    data.append(build_graph_data(current_date, secrets.SystemRandom().randint(-5, 15), currency))
                     graph_key = _('Sample data')
             else:
                 last_balance = journal.current_statement_balance
@@ -292,7 +292,7 @@ class account_journal(models.Model):
                 for index in range(6):
                     data[index]['type'] = 'o_sample_data'
                     # we use unrealistic values for the sample data
-                    data[index]['value'] = random.randint(0, 20)
+                    data[index]['value'] = secrets.SystemRandom().randint(0, 20)
                     graph_key = _('Sample data')
 
             result[journal.id] = [{'values': data, 'title': graph_title, 'key': graph_key, 'is_sample_data': is_sample_data}]

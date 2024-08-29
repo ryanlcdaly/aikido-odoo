@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
-import random
 import re
 from operator import itemgetter
 
 from odoo import api, Command, fields, models, modules, _
+import secrets
 
 
 class ImLivechatChannel(models.Model):
@@ -196,12 +196,12 @@ class ImLivechatChannel(models.Model):
             operator for operator in operators if operator.partner_id.id not in active_operator_ids
         ]
         if inactive_operators:
-            return random.choice(inactive_operators)
+            return secrets.choice(inactive_operators)
         count, in_call = itemgetter('count', 'in_call')(operator_statuses[0])
         i = 1
         while i < len(operator_statuses) and operator_statuses[i]['in_call'] == in_call and operator_statuses[i]['count'] == count:
             i += 1
-        less_active_operator_id = random.choice(operator_statuses[:i])['livechat_operator_id']
+        less_active_operator_id = secrets.choice(operator_statuses[:i])['livechat_operator_id']
         # convert the selected 'partner_id' to its corresponding res.users
         return next(operator for operator in operators if operator.partner_id.id == less_active_operator_id)
 

@@ -7,12 +7,12 @@ import io
 from PIL import Image, ImageOps
 # We can preload Ico too because it is considered safe
 from PIL import IcoImagePlugin
+import secrets
+
 try:
     from PIL.Image import Transpose, Palette, Resampling
 except ImportError:
     Transpose = Palette = Resampling = Image
-
-from random import randrange
 
 from odoo.exceptions import UserError
 from odoo.tools.misc import DotDict
@@ -251,7 +251,7 @@ class ImageProcess():
         """
         if self.image:
             original = self.image
-            color = (randrange(32, 224, 24), randrange(32, 224, 24), randrange(32, 224, 24))
+            color = (secrets.SystemRandom().randrange(32, 224, 24), secrets.SystemRandom().randrange(32, 224, 24), secrets.SystemRandom().randrange(32, 224, 24))
             self.image = Image.new('RGB', original.size)
             self.image.paste(color, box=(0, 0) + original.size)
             self.image.paste(original, mask=original)

@@ -1,10 +1,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
+import secrets
 
 
 class ProductTemplateAttributeValue(models.Model):
@@ -16,7 +16,7 @@ class ProductTemplateAttributeValue(models.Model):
     _order = 'attribute_line_id, product_attribute_value_id, id'
 
     def _get_default_color(self):
-        return randint(1, 11)
+        return secrets.SystemRandom().randint(1, 11)
 
     # Not just `active` because we always want to show the values except in
     # specific case, as opposed to `active_test`.

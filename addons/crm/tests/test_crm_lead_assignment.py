@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -11,6 +10,7 @@ from odoo import fields
 from odoo.addons.crm.tests.common import TestLeadConvertCommon
 from odoo.tests.common import tagged
 from odoo.tools import mute_logger
+import secrets
 
 
 class TestLeadAssignCommon(TestLeadConvertCommon):
@@ -202,7 +202,7 @@ class TestLeadAssign(TestLeadAssignCommon):
         """ Test assign process with duplicates on partner. Allow to ensure notably
         that de duplication is effectively performed. """
         # fix the seed and avoid randomness
-        random.seed(1940)
+        secrets.SystemRandom().seed(1940)
 
         leads = self._create_leads_batch(
             lead_type='lead',
@@ -259,7 +259,7 @@ class TestLeadAssign(TestLeadAssignCommon):
     @mute_logger('odoo.models.unlink')
     def test_assign_no_duplicates(self):
         # fix the seed and avoid randomness
-        random.seed(1945)
+        secrets.SystemRandom().seed(1945)
 
         leads = self._create_leads_batch(
             lead_type='lead',
@@ -307,7 +307,7 @@ class TestLeadAssign(TestLeadAssignCommon):
         """ Test assignment on a more high volume oriented test set in order to
         test more real life use cases. """
         # fix the seed and avoid randomness (funny: try 1870)
-        random.seed(1871)
+        secrets.SystemRandom().seed(1871)
 
         # create leads enough to assign one month of work
         _lead_count, _email_dup_count, _partner_count = 600, 50, 150

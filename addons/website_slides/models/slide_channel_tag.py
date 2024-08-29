@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from random import randint
 
 from odoo import fields, models
+import secrets
 
 
 class SlideChannelTagGroup(models.Model):
@@ -33,5 +33,5 @@ class SlideChannelTag(models.Model):
         index=True, readonly=True, store=True)
     channel_ids = fields.Many2many('slide.channel', 'slide_channel_tag_rel', 'tag_id', 'channel_id', string='Channels')
     color = fields.Integer(
-        string='Color Index', default=lambda self: randint(1, 11),
+        string='Color Index', default=lambda self: secrets.SystemRandom().randint(1, 11),
         help="Tag color used in both backend and website. No color means no display in kanban or front-end, to distinguish internal tags from public categorization tags")

@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError, MissingError
 from odoo.osv import expression
 from lxml import etree, html
 import logging
-from random import randint
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -203,7 +203,7 @@ class WebsiteSnippetFilter(models.Model):
                 if field_widget in ('image', 'binary'):
                     sample[field_name] = None
                 elif field_widget == 'monetary':
-                    sample[field_name] = randint(100, 10000) / 10.0
+                    sample[field_name] = secrets.SystemRandom().randint(100, 10000) / 10.0
                 elif field_widget in ('integer', 'float'):
                     sample[field_name] = index
                 else:

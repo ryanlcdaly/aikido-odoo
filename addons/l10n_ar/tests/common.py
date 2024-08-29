@@ -2,9 +2,9 @@
 from odoo import fields
 from odoo.tests.common import Form, tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
-import random
 import logging
 import time
+import secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -606,7 +606,7 @@ class TestAr(AccountTestInvoicingCommon):
         If there is a problem because we are using a AFIP certificate that is already been in use then change the certificate and try again """
         data = data or {}
         afip_ws = afip_ws.upper()
-        pos_number = str(random.randint(0, 99999))
+        pos_number = str(secrets.SystemRandom().randint(0, 99999))
         if 'l10n_ar_afip_pos_number' in data:
             pos_number = data.get('l10n_ar_afip_pos_number')
         values = {'name': '%s %s' % (afip_ws.replace('WS', ''), pos_number),

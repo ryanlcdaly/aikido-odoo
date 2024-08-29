@@ -1,12 +1,12 @@
-import random
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools import pycompat
+import secrets
 
 
 def Random(seed):
     """ Return a random number generator object with the given seed. """
-    r = random.Random()
+    r = secrets.SystemRandom().Random()
     r.seed(seed, version=2)
     return r
 
@@ -148,7 +148,7 @@ def randint(a, b, seed=None):
     :rtype: function (iterator, str, str) -> dict
     """
     def get_rand_int(random=None, **kwargs):
-        return random.randint(a, b)
+        return secrets.SystemRandom().randint(a, b)
     return compute(get_rand_int, seed=seed)
 
 def randfloat(a, b, seed=None):
@@ -156,7 +156,7 @@ def randfloat(a, b, seed=None):
     to a random float between a and b included in each input dict.
     """
     def get_rand_float(random=None, **kwargs):
-        return random.uniform(a, b)
+        return secrets.SystemRandom().uniform(a, b)
     return compute(get_rand_float, seed=seed)
 
 def randdatetime(*, base_date=None, relative_before=None, relative_after=None, seed=None):
@@ -177,5 +177,5 @@ def randdatetime(*, base_date=None, relative_before=None, relative_after=None, s
     seconds_after = relative_after and ((base_date + relative_after) - base_date).total_seconds() or 0
 
     def get_rand_datetime(random=None, **kwargs):
-        return base_date + relativedelta(seconds=random.randint(int(seconds_before), int(seconds_after)))
+        return base_date + relativedelta(seconds=secrets.SystemRandom().randint(int(seconds_before), int(seconds_after)))
     return compute(get_rand_datetime, seed=seed)

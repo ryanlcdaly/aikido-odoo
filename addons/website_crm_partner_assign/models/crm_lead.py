@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 from markupsafe import Markup
 
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessDenied, AccessError, UserError
 from odoo.tools import html_escape
+import secrets
 
 
 
@@ -183,8 +183,7 @@ class CrmLead(models.Model):
                         partner_ids = Partner.browse([res['id']])
 
                 if partner_ids:
-                    res_partner_ids[lead.id] = random.choices(
-                        partner_ids.ids,
+                    res_partner_ids[lead.id] = secrets.SystemRandom().choices(partner_ids.ids,
                         partner_ids.mapped('partner_weight'),
                     )[0]
 

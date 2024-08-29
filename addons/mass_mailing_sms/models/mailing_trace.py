@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import random
 import string
 
 from odoo import api, fields, models
+import secrets
 
 
 class MailingTrace(models.Model):
@@ -69,4 +69,4 @@ class MailingTrace(models.Model):
         """ Generate a random code for trace. Uniqueness is not really necessary
         as it serves as obfuscation when unsubscribing. A valid trio
         code / mailing_id / number will be requested. """
-        return ''.join(random.choice(string.ascii_letters + string.digits) for dummy in range(self.CODE_SIZE))
+        return ''.join(secrets.choice(string.ascii_letters + string.digits) for dummy in range(self.CODE_SIZE))
