@@ -6,6 +6,7 @@ from markupsafe import Markup
 
 from odoo import api, models, _
 from odoo.addons.website.tools import add_form_signature
+import lxml.etree
 
 
 class Contact(models.AbstractModel):
@@ -32,7 +33,7 @@ class HTML(models.AbstractModel):
         if res and '<form' in res:  # Efficient check
             # The usage of `fromstring`, `HTMLParser`, `tostring` and `Markup`
             # is replicating what is done in the `super()` implementation.
-            body = etree.fromstring("<body>%s</body>" % res, etree.HTMLParser())[0]
+            body = etree.fromstring("<body>%s</body>" % res, etree.HTMLParser(), parser=lxml.etree.XMLParser(resolve_entities=False))[0]
             add_form_signature(body, self.sudo().env)
             res = Markup(etree.tostring(body, encoding='unicode', method='html')[6:-7])
 

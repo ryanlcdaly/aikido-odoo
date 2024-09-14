@@ -5,6 +5,7 @@ from lxml import etree
 from odoo import models, fields
 from odoo.tools.misc import file_path
 import re
+import lxml.etree
 
 TAX_EXEMPTION_CODES = ['VATEX-SA-29', 'VATEX-SA-29-7', 'VATEX-SA-30']
 TAX_ZERO_RATE_CODES = ['VATEX-SA-32', 'VATEX-SA-33', 'VATEX-SA-34-1', 'VATEX-SA-34-2', 'VATEX-SA-34-3', 'VATEX-SA-34-4',
@@ -57,11 +58,11 @@ class AccountEdiXmlUBL21Zatca(models.AbstractModel):
 
         def _transform_and_canonicalize_xml(content):
             """ Transform XML content to remove certain elements and signatures using an XSL template """
-            invoice_xsl = etree.parse(file_path('l10n_sa_edi/data/pre-hash_invoice.xsl'))
+            invoice_xsl = etree.parse(file_path('l10n_sa_edi/data/pre-hash_invoice.xsl'), parser=lxml.etree.XMLParser(resolve_entities=False))
             transform = etree.XSLT(invoice_xsl)
             return _canonicalize_xml(transform(content))
 
-        root = etree.fromstring(xml_content)
+        root = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         # Transform & canonicalize the XML content
         transformed_xml = _transform_and_canonicalize_xml(root)
         # Get the SHA256 hashed value of the XML content

@@ -12,6 +12,7 @@ import odoo
 from odoo.tests.common import BaseCase, HttpCase, tagged
 from odoo.tools import topological_sort
 from odoo.addons.base.models.assetsbundle import AssetsBundle, WebAsset
+import lxml.etree
 
 
 _logger = logging.getLogger(__name__)
@@ -77,7 +78,7 @@ class TestStaticInheritanceCommon(odoo.tests.TransactionCase):
     def assertXMLEqual(self, output, expected):
         self.assertTrue(output)
         self.assertTrue(expected)
-        self.assertEqual(etree.fromstring(output), etree.fromstring(expected))
+        self.assertEqual(etree.fromstring(output, parser=lxml.etree.XMLParser(resolve_entities=False)), etree.fromstring(expected, parser=lxml.etree.XMLParser(resolve_entities=False)))
 
 @tagged('assets_bundle', 'static_templates')
 class TestStaticInheritance(TestStaticInheritanceCommon):
@@ -909,7 +910,7 @@ class TestStaticInheritancePerformance(TestStaticInheritanceCommon):
         delta2500 = after - before
         _logger.runbot('Static Templates Inheritance: 2500 templates treated in %s seconds' % delta2500.total_seconds())
 
-        whole_tree = etree.fromstring(contents)
+        whole_tree = etree.fromstring(contents, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertEqual(len(whole_tree), nMod * nFilePerMod * nTemplatePerFile)
 
         # With 25000 templates next

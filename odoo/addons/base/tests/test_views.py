@@ -18,6 +18,7 @@ from odoo.tests import common, tagged
 from odoo.addons.base.tests.common import TransactionCaseWithUserDemo
 from odoo.tools import get_cache_key_counter, mute_logger, view_validation, safe_eval
 from odoo.addons.base.models import ir_ui_view
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -812,7 +813,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         [initial] = arch.xpath('//item[@order=1]')
@@ -855,7 +856,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # First world - has been replaced by inheritance
@@ -910,7 +911,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         [initial] = arch.xpath('/hello[1]/war[1]')
@@ -968,7 +969,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # Only remaining world but still the second in original view
@@ -1002,7 +1003,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # Note: this test is a variant of the test_branding_inherit_remove_node
@@ -1059,7 +1060,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # Check if the replacement inside the child view did not mess up the
@@ -1118,7 +1119,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # Check if the replacement inside the child view did not mess up the
@@ -1176,7 +1177,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # Check if the replacement inside the child view did not mess up the
@@ -1224,7 +1225,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
 
         head = arch.xpath('//head')[0]
         head_child = head[0]
@@ -1287,7 +1288,7 @@ class TestTemplating(ViewCase):
             """
         })
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         # First t-field should have an indication of xpath
@@ -1327,7 +1328,7 @@ class TestTemplating(ViewCase):
             """
         })
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         node = arch.xpath('//world')[1]
@@ -1358,7 +1359,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view2.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         [initial] = arch.xpath('//item[@order=1]')
@@ -1405,7 +1406,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         self.assertEqual(
@@ -1441,7 +1442,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         self.assertEqual(arch, E.root(E.item({
@@ -1462,7 +1463,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         self.assertEqual(arch, E.root(E.item(E.span({'t-call': "foo"}))))
@@ -1477,7 +1478,7 @@ class TestTemplating(ViewCase):
         })
 
         arch_string = view.with_context(inherit_branding=True).get_combined_arch()
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         self.assertEqual(arch, E.root(E.item(E.span({'t-esc': "foo"}))))
@@ -1505,7 +1506,7 @@ class TestTemplating(ViewCase):
 
         arch_string = view1.with_context(inherit_branding=True).get_combined_arch()
 
-        arch = etree.fromstring(arch_string)
+        arch = etree.fromstring(arch_string, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.View.distribute_branding(arch)
 
         self.assertEqual(
@@ -1552,7 +1553,7 @@ class TestViews(ViewCase):
                 self.cr.execute('SELECT type FROM ir_ui_view WHERE id = %s', [kw['inherit_id']])
                 kw['type'] = self.cr.fetchone()[0]
             else:
-                kw['type'] = etree.fromstring(arch_db).tag
+                kw['type'] = etree.fromstring(arch_db, parser=lxml.etree.XMLParser(resolve_entities=False)).tag
             kw['arch_db'] = Json({'en_US': arch_db}) if self.env.lang == 'en_US' else Json({'en_US': arch_db, self.env.lang: arch_db})
 
         keys = sorted(kw)
@@ -2309,7 +2310,7 @@ class TestViews(ViewCase):
         # Make sure demo doesn't have the base.group_system
         self.assertFalse(self.env['res.partner'].with_user(user_demo).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_demo).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(tree.xpath('//field[@name="name"]'))
         self.assertFalse(tree.xpath('//field[@name="company_id"]'))
         self.assertTrue(tree.xpath('//div[@id="foo"]'))
@@ -2319,7 +2320,7 @@ class TestViews(ViewCase):
         # Make sure admin has the base.group_system
         self.assertTrue(self.env['res.partner'].with_user(user_admin).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_admin).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(tree.xpath('//field[@name="name"]'))
         self.assertTrue(tree.xpath('//field[@name="company_id"]'))
         self.assertTrue(tree.xpath('//div[@id="foo"]'))
@@ -2799,7 +2800,7 @@ class TestViews(ViewCase):
             """,
         })
         arch = self.env['res.partner'].get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         nodes = tree.xpath("//field[@name='name' and not (@groups)]")
         self.assertEqual(1, len(nodes))
 
@@ -2821,7 +2822,7 @@ class TestViews(ViewCase):
             """,
         })
         arch = self.env['res.partner'].get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         node_field_name = tree.xpath('//field[@name="name"]')[0]
         self.assertEqual(node_field_name.get('invisible'), "active")
 
@@ -3139,7 +3140,7 @@ class TestViews(ViewCase):
         view_data = self.env['ir.ui.view'].with_context(form_view_ref='base.test_views_test_view_ref').get_view()
         self.assertEqual(view.id, view_data['id'], "The view returned should be test_views_test_view_ref")
         view_data = self.env['ir.ui.view'].with_context(form_view_ref='base.test_views_test_view_ref').get_view(view.id)
-        tree = etree.fromstring(view_data['arch'])
+        tree = etree.fromstring(view_data['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         field_groups_id = tree.xpath('//field[@name="groups_id"]')[0]
         self.assertEqual(
             len(field_groups_id.xpath(".//*[@class='canary']")),
@@ -3642,7 +3643,7 @@ class TestViewCombined(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.a1.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.a1(),
                 E.a3(),
@@ -3653,7 +3654,7 @@ class TestViewCombined(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.a3.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.a1(),
                 E.a3(),
@@ -3664,7 +3665,7 @@ class TestViewCombined(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.a4.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.a1(),
                 E.a4(),
@@ -3676,7 +3677,7 @@ class TestViewCombined(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.c2.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.a1(),
                 E.c3(),
@@ -3690,7 +3691,7 @@ class TestViewCombined(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.d1.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.a1(),
                 E.d1(),
@@ -3772,7 +3773,7 @@ class TestOptionalViews(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.v0.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.base(),
                 E.v1(),
@@ -3788,7 +3789,7 @@ class TestOptionalViews(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.v0.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.base(),
                 E.v1(),
@@ -3799,7 +3800,7 @@ class TestOptionalViews(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.v0.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.base(),
                 E.v1(),
@@ -3811,7 +3812,7 @@ class TestOptionalViews(ViewCase):
         context = {'check_view_ids': self.View.search([]).ids}
         arch = self.v0.with_context(context).get_combined_arch()
         self.assertEqual(
-            etree.fromstring(arch),
+            etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)),
             E.qweb(
                 E.base(),
                 E.v1(),
@@ -4016,7 +4017,7 @@ class ViewModifiers(ViewCase):
             if isinstance(what, dict):
                 node = etree.Element('field', {k: str(v) for k, v in what.items()})
             else:
-                node = etree.fromstring(what) if isinstance(what, str) else what
+                node = etree.fromstring(what, parser=lxml.etree.XMLParser(resolve_entities=False)) if isinstance(what, str) else what
             modifiers = {attr: node.attrib[attr] for attr in node.attrib if attr in ir_ui_view.VIEW_MODIFIERS}
             vnames = set()
             for attr, expr in modifiers.items():
@@ -4091,7 +4092,7 @@ class ViewModifiers(ViewCase):
                 <field name="a" invisible="b == 'c'"/>
                 <field name="a" invisible="(b == 'c')"/>
             </tree>
-        ''')
+        ''', parser=lxml.etree.XMLParser(resolve_entities=False))
         _test_modifiers(tree[0][0], set())
         _test_modifiers(tree[1], set())
         _test_modifiers(tree[2], set())
@@ -4128,7 +4129,7 @@ class ViewModifiers(ViewCase):
             </form>
         """)
         arch = self.View.with_context(foo=True).get_view(view.id)['arch']
-        field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
+        field_node = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[@name="name"]')[0]
         self.assertEqual(field_node.get('invisible'), "context.get('foo')")
         self.assertEqual(field_node.get('readonly'), "context.get('bar')")
         self.assertEqual(field_node.get('required'), "context.get('baz')")
@@ -4147,7 +4148,7 @@ class ViewModifiers(ViewCase):
             ('form', {'foo': True}, False),
         ]:
             arch = self.View.with_context(**context).get_view(view.id)['arch']
-            field_node = etree.fromstring(arch).xpath('//field[@name="name"]')[0]
+            field_node = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False)).xpath('//field[@name="name"]')[0]
             result = field_node.get('invisible')
             result = safe_eval.safe_eval(result, {'context': context, 'type': type_value})
             self.assertEqual(bool(result), expected, f"With context: {context}")
@@ -4244,7 +4245,7 @@ class ViewModifiers(ViewCase):
             """,
         })
         arch = self.env['ir.module.module'].get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
 
         invisible = tree.xpath('//group')[0].get('invisible')
         self.assertEqual(invisible, "state != 'finished'")
@@ -4323,7 +4324,7 @@ class ViewModifiers(ViewCase):
         # Make sure demo doesn't have the base.group_system
         self.assertFalse(self.env['res.partner'].with_user(user_demo).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_demo).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(tree.xpath('//field[@name="name"]'))
         self.assertFalse(tree.xpath('//field[@name="company_id"]'))
         self.assertTrue(tree.xpath('//div[@id="foo"]'))
@@ -4333,7 +4334,7 @@ class ViewModifiers(ViewCase):
         # Make sure admin has the base.group_system
         self.assertTrue(self.env['res.partner'].with_user(user_admin).env.user.has_group('base.group_system'))
         arch = self.env['res.partner'].with_user(user_admin).get_view(view_id=view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(tree.xpath('//field[@name="name"]'))
         self.assertTrue(tree.xpath('//field[@name="company_id"]'))
         self.assertTrue(tree.xpath('//div[@id="foo"]'))

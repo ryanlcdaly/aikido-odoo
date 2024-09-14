@@ -11,6 +11,7 @@ from werkzeug.test import EnvironBuilder
 import odoo
 from odoo.tests.common import HttpCase, HOST
 from odoo.tools.misc import hmac, DotDict, frozendict
+import lxml.etree
 
 
 @contextlib.contextmanager
@@ -164,7 +165,7 @@ def text_from_html(html_fragment, collapse_whitespace=False):
     :return: text extracted from the html
     """
     # lxml requires one single root element
-    tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True))
+    tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True), parser=lxml.etree.XMLParser(resolve_entities=False))
     content = ' '.join(tree.itertext())
     if collapse_whitespace:
         content = re.sub('\\s+', ' ', content).strip()

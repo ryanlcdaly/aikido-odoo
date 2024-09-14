@@ -30,6 +30,7 @@ from odoo.tools.translate import xml_translate, TRANSLATED_ATTRS
 from odoo.tools.view_validation import valid_view, get_domain_value_names, get_expression_field_names, get_dict_asts
 from odoo.models import check_method_name
 from odoo.osv.expression import expression
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -108,7 +109,7 @@ def get_view_arch_from_file(filepath, xmlid):
         # len('_ir_ui_view') == 11
         xpath = xpath[:-1] + f" or @id='{xmlid[:-11]}' or @id='{view_id[:-11]}']"
 
-    document = etree.parse(filepath)
+    document = etree.parse(filepath, parser=lxml.etree.XMLParser(resolve_entities=False))
     for node in document.xpath(xpath):
         if node.tag == 'record':
             field_arch = node.find('field[@name="arch"]')
@@ -365,7 +366,7 @@ actual arch.
             try:
                 # verify the view is valid xml and that the inheritance resolves
                 if view.inherit_id:
-                    view_arch = etree.fromstring(view.arch)
+                    view_arch = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
                     view._valid_inheritance(view_arch)
                 combined_arch = view._get_combined_arch()
                 if view.type == 'qweb':
@@ -478,7 +479,7 @@ actual arch.
                     try:
                         if not values.get('arch') and not values.get('arch_base'):
                             raise ValidationError(_('Missing view architecture.'))
-                        values['type'] = etree.fromstring(values.get('arch') or values.get('arch_base')).tag
+                        values['type'] = etree.fromstring(values.get('arch') or values.get('arch_base'), parser=lxml.etree.XMLParser(resolve_entities=False)).tag
                     except LxmlError:
                         # don't raise here, the constraint that runs `self._check_xml` will
                         # do the job properly.
@@ -862,7 +863,7 @@ actual arch.
         #   3 [4]
         #   4 [6]
         #   6 []
-        combined_arch = etree.fromstring(self.arch)
+        combined_arch = etree.fromstring(self.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         if self.env.context.get('inherit_branding'):
             combined_arch.attrib.update({
                 'data-oe-model': 'ir.ui.view',
@@ -881,7 +882,7 @@ actual arch.
         queue = collections.deque(sorted(hierarchy[self], key=lambda v: v.mode))
         while queue:
             view = queue.popleft()
-            arch = etree.fromstring(view.arch)
+            arch = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
             if view.env.context.get('inherit_branding'):
                 view.inherit_branding(arch)
             self._add_validation_flag(combined_arch, view, arch)
@@ -2624,7 +2625,7 @@ class Model(models.AbstractModel):
 
         result = dict(self._get_view_cache(view_id, view_type, **options))
 
-        node = etree.fromstring(result['arch'])
+        node = etree.fromstring(result['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         node = self.env['ir.ui.view']._postprocess_access_rights(node)
         result['arch'] = etree.tostring(node, encoding="unicode").replace('\t', '')
 
@@ -2721,7 +2722,7 @@ class Model(models.AbstractModel):
 
         if view_info is None:
             view_info = self.get_view()
-        process(etree.fromstring(view_info['arch']), view_info, '')
+        process(etree.fromstring(view_info['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)), view_info, '')
         return result
 
     @api.model
@@ -2754,7 +2755,7 @@ class Model(models.AbstractModel):
             view_info = self.get_view()
 
         result = {}
-        fill_spec(etree.fromstring(view_info['arch']), self, result)
+        fill_spec(etree.fromstring(view_info['arch'], parser=lxml.etree.XMLParser(resolve_entities=False)), self, result)
         return result
 
 

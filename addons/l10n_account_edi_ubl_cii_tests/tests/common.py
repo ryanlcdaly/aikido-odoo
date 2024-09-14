@@ -10,6 +10,7 @@ from odoo import fields
 from odoo.tools import misc
 
 from lxml import etree
+import lxml.etree
 
 
 class TestUBLCommon(AccountTestInvoicingCommon):
@@ -238,7 +239,7 @@ class TestUBLCommon(AccountTestInvoicingCommon):
         xml_etree = self.get_xml_tree_from_string(xml_content)
 
         expected_file_full_path = misc.file_path(f'{self.test_module}/tests/test_files/{expected_file_path}')
-        expected_etree = etree.parse(expected_file_full_path).getroot()
+        expected_etree = etree.parse(expected_file_full_path, parser=lxml.etree.XMLParser(resolve_entities=False)).getroot()
 
         modified_etree = self.with_applied_xpath(
             expected_etree,

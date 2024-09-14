@@ -9,7 +9,6 @@ from unittest import skip
 from unittest.mock import Mock, patch
 import textwrap
 import pathlib
-import lxml
 import base64
 
 import odoo
@@ -24,6 +23,7 @@ from odoo.tests.common import TransactionCase
 from odoo.addons.base.models.ir_qweb import QWebException
 from odoo.tools import mute_logger, func
 from odoo.tools.misc import file_path
+import lxml.etree
 
 GETMTINE = os.path.getmtime
 
@@ -1353,7 +1353,7 @@ class TestAssetsManifest(AddonManifestPatched):
         })
 
         rendered = self.env['ir.qweb']._render(view.id)
-        html_tree = lxml.etree.fromstring(rendered)
+        html_tree = lxml.etree.fromstring(rendered, parser=lxml.etree.XMLParser(resolve_entities=False))
         stylesheets = html_tree.findall('link')
         self.assertEqual(len(stylesheets), 2)
         self.assertEqual(stylesheets[0].get('href'), 'http://external.css/externalstyle.css')

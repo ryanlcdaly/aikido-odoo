@@ -15,6 +15,7 @@ from odoo import api, fields, models, _, _lt, tools
 from odoo.tools import posix_to_ldml, float_utils, format_date, format_duration, pycompat
 from odoo.tools.mail import safe_attrs
 from odoo.tools.misc import get_lang, babel_locale_parse
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -364,7 +365,7 @@ class HTMLConverter(models.AbstractModel):
     def value_to_html(self, value, options):
         irQweb = self.env['ir.qweb']
         # wrap value inside a body and parse it as HTML
-        body = etree.fromstring("<body>%s</body>" % value, etree.HTMLParser(encoding='utf-8'))[0]
+        body = etree.fromstring("<body>%s</body>" % value, etree.HTMLParser(encoding='utf-8'), parser=lxml.etree.XMLParser(resolve_entities=False))[0]
         # use pos processing for all nodes with attributes
         for element in body.iter():
             if element.attrib:

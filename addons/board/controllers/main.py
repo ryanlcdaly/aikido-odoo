@@ -4,6 +4,7 @@
 from lxml import etree as ElementTree
 
 from odoo.http import Controller, route, request
+import lxml.etree
 
 
 class Board(Controller):
@@ -18,7 +19,7 @@ class Board(Controller):
             view_id = action['views'][0][0]
             board_view = request.env['board.board'].get_view(view_id, 'form')
             if board_view and 'arch' in board_view:
-                board_arch = ElementTree.fromstring(board_view['arch'])
+                board_arch = ElementTree.fromstring(board_view['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
                 column = board_arch.find('./board/column')
                 if column is not None:
                     # We don't want to save allowed_company_ids

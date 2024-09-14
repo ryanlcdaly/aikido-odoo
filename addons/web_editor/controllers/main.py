@@ -28,6 +28,7 @@ from odoo.addons.iap.tools import iap_tools
 from odoo.addons.base.models.assetsbundle import AssetsBundle
 
 from ..models.ir_attachment import SUPPORTED_IMAGE_MIMETYPES
+import lxml.etree
 
 logger = logging.getLogger(__name__)
 DEFAULT_LIBRARY_ENDPOINT = 'https://media-api.odoo.com'
@@ -137,7 +138,7 @@ class Web_Editor(http.Controller):
     def update_checklist(self, res_model, res_id, filename, checklistId, checked, **kwargs):
         record = request.env[res_model].browse(res_id)
         value = filename in record._fields and record[filename]
-        htmlelem = etree.fromstring("<div>%s</div>" % value, etree.HTMLParser())
+        htmlelem = etree.fromstring("<div>%s</div>" % value, etree.HTMLParser(), parser=lxml.etree.XMLParser(resolve_entities=False))
         checked = bool(checked)
 
         li = htmlelem.find(".//li[@id='checkId-%s']" % checklistId)
@@ -167,7 +168,7 @@ class Web_Editor(http.Controller):
     def update_stars(self, res_model, res_id, filename, starsId, rating):
         record = request.env[res_model].browse(res_id)
         value = filename in record._fields and record[filename]
-        htmlelem = etree.fromstring("<div>%s</div>" % value, etree.HTMLParser())
+        htmlelem = etree.fromstring("<div>%s</div>" % value, etree.HTMLParser(), parser=lxml.etree.XMLParser(resolve_entities=False))
 
         stars_widget = htmlelem.find(".//span[@id='checkId-%s']" % starsId)
 
@@ -428,7 +429,7 @@ class Web_Editor(http.Controller):
         # First check the t-call-assets used in the related views
         url_infos = dict()
         for v in views:
-            for asset_call_node in etree.fromstring(v["arch"]).xpath("//t[@t-call-assets]"):
+            for asset_call_node in etree.fromstring(v["arch"], parser=lxml.etree.XMLParser(resolve_entities=False)).xpath("//t[@t-call-assets]"):
                 attr = asset_call_node.get(t_call_assets_attribute)
                 if attr and not json.loads(attr.lower()):
                     continue
@@ -672,7 +673,7 @@ class Web_Editor(http.Controller):
         image = stream.read()
         img = binary_to_image(image)
         width, height = tuple(str(size) for size in img.size)
-        root = etree.fromstring(svg)
+        root = etree.fromstring(svg, parser=lxml.etree.XMLParser(resolve_entities=False))
         root.attrib.update({'width': width, 'height': height})
         # Update default color palette on shape SVG.
         svg, _ = self._update_svg_colors(kwargs, etree.tostring(root, pretty_print=True).decode('utf-8'))

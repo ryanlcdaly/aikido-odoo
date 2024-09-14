@@ -31,6 +31,7 @@ import odoo
 from odoo.exceptions import UserError
 from . import config, pycompat
 from .misc import file_open, file_path, get_iso_codes, SKIPPED_ELEMENT_TYPES
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -287,7 +288,7 @@ def translate_xml_node(node, callback, parse, serialize):
 
 
 def parse_xml(text):
-    return etree.fromstring(text)
+    return etree.fromstring(text, parser=lxml.etree.XMLParser(resolve_entities=False))
 
 def serialize_xml(node):
     return etree.tostring(node, method='xml', encoding='unicode')
@@ -328,7 +329,7 @@ def xml_term_converter(value):
     """
     # wrap value inside a div and parse it as HTML
     div = f"<div>{value}</div>"
-    root = etree.fromstring(div, etree.HTMLParser())
+    root = etree.fromstring(div, etree.HTMLParser(), parser=lxml.etree.XMLParser(resolve_entities=False))
     # root is html > body > div
     # serialize div as XML and discard surrounding tags
     return etree.tostring(root[0][0], encoding='unicode')[5:-6]
@@ -356,7 +357,7 @@ def html_term_converter(value):
     """
     # wrap value inside a div and parse it as HTML
     div = f"<div>{value}</div>"
-    root = etree.fromstring(div, etree.HTMLParser())
+    root = etree.fromstring(div, etree.HTMLParser(), parser=lxml.etree.XMLParser(resolve_entities=False))
     # root is html > body > div
     # serialize div as HTML and discard surrounding tags
     return etree.tostring(root[0][0], encoding='unicode', method='html')[5:-6]
@@ -917,7 +918,7 @@ def babel_extract_qweb(fileobj, keywords, comment_tags, options):
     result = []
     def handle_text(text, lineno):
         result.append((lineno, None, text, []))
-    tree = etree.parse(fileobj)
+    tree = etree.parse(fileobj, parser=lxml.etree.XMLParser(resolve_entities=False))
     _extract_translatable_qweb_terms(tree.getroot(), handle_text)
     return result
 

@@ -9,6 +9,7 @@ from lxml import etree, html
 from odoo import api, models, _
 from odoo.osv import expression
 from odoo.exceptions import ValidationError
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -112,7 +113,7 @@ class IrUiView(models.Model):
         # the root of the arch section shouldn't actually be replaced as it's
         # not really editable itself, only the content truly is editable.
         self.ensure_one()
-        arch = etree.fromstring(self.arch.encode('utf-8'))
+        arch = etree.fromstring(self.arch.encode('utf-8'), parser=lxml.etree.XMLParser(resolve_entities=False))
         # => get the replacement root
         if not section_xpath:
             root = arch
@@ -191,7 +192,7 @@ class IrUiView(models.Model):
                     el.getparent().replace(el, empty)
 
         new_arch = self.replace_arch_section(xpath, arch_section)
-        old_arch = etree.fromstring(self.arch.encode('utf-8'))
+        old_arch = etree.fromstring(self.arch.encode('utf-8'), parser=lxml.etree.XMLParser(resolve_entities=False))
         if not self._are_archs_equal(old_arch, new_arch):
             self._set_noupdate()
             self.write({'arch': etree.tostring(new_arch, encoding='unicode')})
@@ -240,7 +241,7 @@ class IrUiView(models.Model):
 
         views_to_return = view
 
-        node = etree.fromstring(view.arch)
+        node = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         xpath = "//t[@t-call]"
         if bundles:
             xpath += "| //t[@t-call-assets]"

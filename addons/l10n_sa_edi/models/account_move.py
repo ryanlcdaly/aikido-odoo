@@ -9,6 +9,7 @@ from lxml import etree
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509 import load_der_x509_certificate
+import lxml.etree
 
 
 class AccountMove(models.Model):
@@ -48,7 +49,7 @@ class AccountMove(models.Model):
                     move.l10n_sa_qr_code_str = b64encode(qr_code_str).decode()
                 elif zatca_document.state == 'sent' and zatca_document.attachment_id.datas:
                     document_xml = zatca_document.attachment_id.with_context(bin_size=False).datas.decode()
-                    root = etree.fromstring(b64decode(document_xml))
+                    root = etree.fromstring(b64decode(document_xml), parser=lxml.etree.XMLParser(resolve_entities=False))
                     qr_node = root.xpath('//*[local-name()="ID"][text()="QR"]/following-sibling::*/*')[0]
                     move.l10n_sa_qr_code_str = qr_node.text
 
@@ -81,7 +82,7 @@ class AccountMove(models.Model):
             return root.xpath(expr, namespaces=edi_format._l10n_sa_get_namespaces())[0].text.strip()
 
         qr_code_str = ''
-        root = etree.fromstring(unsigned_xml)
+        root = etree.fromstring(unsigned_xml, parser=lxml.etree.XMLParser(resolve_entities=False))
         edi_format = self.env['account.edi.xml.ubl_21.zatca']
 
         # Indent XML content to avoid indentation mismatches

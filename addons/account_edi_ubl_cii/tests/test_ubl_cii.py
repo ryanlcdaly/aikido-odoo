@@ -6,6 +6,7 @@ from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.tests import tagged
 from odoo.tools import file_open
+import lxml.etree
 
 
 @tagged('post_install', '-at_install')
@@ -85,7 +86,7 @@ class TestAccountEdiUblCii(AccountTestInvoicingCommon):
         print_wiz.action_send_and_print()
 
         facturx_attachment = invoice.ubl_cii_xml_id
-        xml_tree = etree.fromstring(facturx_attachment.raw)
+        xml_tree = etree.fromstring(facturx_attachment.raw, parser=lxml.etree.XMLParser(resolve_entities=False))
 
         # Testing the case where a product on the invoice has a UoM with a different category than the one in the DB
         wrong_uom_line = xml_tree.findall('./{*}SupplyChainTradeTransaction/{*}IncludedSupplyChainTradeLineItem')[1]
