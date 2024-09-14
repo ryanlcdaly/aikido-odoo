@@ -11,6 +11,7 @@ from odoo.addons.l10n_es_edi_tbai.models.xml_utils import NS_MAP
 from odoo.tests import tagged
 
 from .common import TestEsEdiTbaiCommon
+import lxml.etree
 
 
 @tagged('post_install', '-at_install', 'post_install_l10n')
@@ -40,7 +41,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         with freeze_time(self.frozen_today):
             xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(self.out_invoice, cancel=False)[self.out_invoice]['xml_file']
             xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST)
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST, parser=lxml.etree.XMLParser(resolve_entities=False))
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_in_post(self):
@@ -59,8 +60,8 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                     'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva21_bc').ids)],
                 })],
             })
-            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice))
-            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN)
+            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice), parser=lxml.etree.XMLParser(resolve_entities=False))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN, parser=lxml.etree.XMLParser(resolve_entities=False))
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_in_ic_post(self):
@@ -85,8 +86,8 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                     'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva21_sp_in').ids)],
                 })],
             })
-            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice))
-            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN_IC)
+            xml_doc = etree.fromstring(self.edi_format._l10n_es_tbai_get_invoice_content_edi(self.in_invoice), parser=lxml.etree.XMLParser(resolve_entities=False))
+            xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_POST_IN_IC, parser=lxml.etree.XMLParser(resolve_entities=False))
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
     def test_xml_tree_cancel(self):
@@ -96,5 +97,5 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
 </TicketBAI>""")  # hack to set out_invoice's registration date
         xml_doc = self.edi_format._get_l10n_es_tbai_invoice_xml(self.out_invoice, cancel=True)[self.out_invoice]['xml_file']
         xml_doc.remove(xml_doc.find("Signature", namespaces=NS_MAP))
-        xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_CANCEL)
+        xml_expected = etree.fromstring(super().L10N_ES_TBAI_SAMPLE_XML_CANCEL, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertXmlTreeEqual(xml_doc, xml_expected)

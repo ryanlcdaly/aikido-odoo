@@ -7,6 +7,7 @@ import logging
 
 from odoo import exceptions, Command
 from odoo.tests.common import Form, TransactionCase, tagged
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -110,7 +111,7 @@ class TestResConfig(TransactionCase):
             """,
         })
         arch = self.env['res.config.settings'].get_view(view.id)['arch']
-        tree = etree.fromstring(arch)
+        tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         self.assertTrue(tree.xpath("""
             //form[@class="oe_form_configuration"]
             /app[@name="foo"]
@@ -139,7 +140,7 @@ class TestResConfig(TransactionCase):
         })
         with self.debug_mode():
             arch = self.env['res.config.settings'].get_view(view.id)['arch']
-            tree = etree.fromstring(arch)
+            tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
             # The <t> must be removed from the structure
             self.assertFalse(tree.xpath('//t'), 'The `<t groups="...">` block must not remain in the view')
             self.assertTrue(tree.xpath("""
@@ -233,7 +234,7 @@ class TestResConfigExecute(TransactionCase):
         # Check user has access to all models of relational fields in view
         # because the webclient makes a read of display_name request for all specified records
         # even if they are not shown to the user.
-        settings_view_arch = etree.fromstring(settings.get_view(view_id=self.settings_view.id)['arch'])
+        settings_view_arch = etree.fromstring(settings.get_view(view_id=self.settings_view.id)['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         seen_fields = set()
         for node in settings_view_arch.iterdescendants(tag='field'):
             fname = node.get('name')

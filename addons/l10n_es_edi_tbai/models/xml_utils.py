@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from lxml import etree
 from odoo.tools.xml_utils import cleanup_xml_node
+import lxml.etree
 
 
 # Utility Methods for Basque Country's TicketBAI XML-related stuff.
@@ -22,7 +23,7 @@ def canonicalize_node(node):
     Required for computing digests and signatures.
     Returns an UTF-8 encoded bytes string.
     """
-    node = etree.fromstring(node) if isinstance(node, str) else node
+    node = etree.fromstring(node, parser=lxml.etree.XMLParser(resolve_entities=False)) if isinstance(node, str) else node
     return etree.tostring(node, method='c14n', with_comments=False, exclusive=False)
 
 def cleanup_xml_signature(xml_sig):

@@ -9,6 +9,7 @@ from xml.sax.saxutils import escape, quoteattr
 from odoo import _, api, fields, models, tools, SUPERUSER_ID
 from odoo.tools import cleanup_xml_node
 from odoo.tools.pdf import OdooPdfFileReader, OdooPdfFileWriter
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -182,7 +183,7 @@ class AccountMoveSend(models.TransientModel):
     @api.model
     def _postprocess_invoice_ubl_xml(self, invoice, invoice_data):
         # Adding the PDF to the XML
-        tree = etree.fromstring(invoice_data['ubl_cii_xml_attachment_values']['raw'])
+        tree = etree.fromstring(invoice_data['ubl_cii_xml_attachment_values']['raw'], parser=lxml.etree.XMLParser(resolve_entities=False))
         anchor_elements = tree.xpath("//*[local-name()='AccountingSupplierParty']")
         if not anchor_elements:
             return
@@ -215,7 +216,7 @@ class AccountMoveSend(models.TransientModel):
         '''
 
         anchor_index = tree.index(anchor_elements[0])
-        tree.insert(anchor_index, etree.fromstring(to_inject))
+        tree.insert(anchor_index, etree.fromstring(to_inject, parser=lxml.etree.XMLParser(resolve_entities=False)))
         invoice_data['ubl_cii_xml_attachment_values']['raw'] = etree.tostring(
             cleanup_xml_node(tree), xml_declaration=True, encoding='UTF-8'
         )

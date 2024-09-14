@@ -22,6 +22,7 @@ from odoo.addons.hw_drivers.driver import Driver
 from odoo.addons.hw_drivers.event_manager import event_manager
 from odoo.addons.hw_drivers.main import iot_devices
 from odoo.addons.hw_drivers.tools import helpers
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 xlib = ctypes.cdll.LoadLibrary('libX11.so.6')
@@ -97,7 +98,7 @@ class KeyboardUSBDriver(Driver):
 
     @classmethod
     def load_layouts_list(cls):
-        tree = etree.parse("/usr/share/X11/xkb/rules/base.xml", etree.XMLParser(ns_clean=True, recover=True))
+        tree = etree.parse("/usr/share/X11/xkb/rules/base.xml", etree.XMLParser(ns_clean=True, recover=True), parser=lxml.etree.XMLParser(resolve_entities=False))
         layouts = tree.xpath("//layout")
         for layout in layouts:
             layout_name = layout.xpath("./configItem/name")[0].text

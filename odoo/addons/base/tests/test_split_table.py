@@ -2,6 +2,7 @@ from odoo.tests.common import TransactionCase
 from odoo.tools import file_open
 from odoo.addons.base.models.ir_actions_report import _split_table
 from lxml import etree
+import lxml.etree
 
 def cleanup_string(s):
     return ''.join(s.split())
@@ -24,7 +25,7 @@ class TestSplitTable(TransactionCase):
                 file_open(f"base/tests/split_table/{actual}.xml") as actual, \
                 file_open(f"base/tests/split_table/{expected}.xml") as expected:
 
-                tree = etree.fromstring(actual.read())
+                tree = etree.fromstring(actual.read(), parser=lxml.etree.XMLParser(resolve_entities=False))
                 _split_table(tree, max_rows)
                 processed = etree.tostring(tree, encoding='unicode')
                 self.assertEqual(cleanup_string(processed), cleanup_string(expected.read()))

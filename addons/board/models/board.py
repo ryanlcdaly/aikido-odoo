@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models
+import lxml.etree
 
 
 class Board(models.AbstractModel):
@@ -47,7 +48,7 @@ class Board(models.AbstractModel):
                     remove_unauthorized_children(child)
             return node
 
-        archnode = etree.fromstring(arch)
+        archnode = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         # add the js_class 'board' on the fly to force the webclient to
         # instantiate a BoardView instead of FormView
         archnode.set('js_class', 'board')

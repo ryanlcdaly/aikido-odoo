@@ -27,6 +27,7 @@ from odoo.modules.module import get_manifest
 from odoo.osv.expression import AND, OR, FALSE_DOMAIN, get_unaccent_wrapper
 from odoo.tools.translate import _, xml_translate
 from odoo.tools import escape_psql, pycompat
+import lxml.etree
 
 logger = logging.getLogger(__name__)
 
@@ -493,7 +494,7 @@ class Website(models.Model):
             try:
                 view_id = self.env['website'].viewref('website.header_call_to_action')
                 if view_id:
-                    el = etree.fromstring(view_id.arch_db)
+                    el = etree.fromstring(view_id.arch_db, parser=lxml.etree.XMLParser(resolve_entities=False))
                     btn_cta_el = el.xpath("//a[hasclass('btn_cta')]")
                     if btn_cta_el:
                         btn_cta_el[0].attrib['href'] = cta_data['cta_btn_href']
@@ -568,7 +569,7 @@ class Website(models.Model):
                     # Deliberately hardcode dynamic code inside the view arch,
                     # it will be transformed into static nodes after a save/edit
                     # thanks to the t-ignore in parents node.
-                    arch_string = etree.fromstring(view_id.arch_db)
+                    arch_string = etree.fromstring(view_id.arch_db, parser=lxml.etree.XMLParser(resolve_entities=False))
                     el = arch_string.xpath("//t[@t-set='configurator_footer_links']")[0]
                     el.attrib['t-value'] = json.dumps(footer_links)
                     view_id.with_context(website_id=website.id).write({'arch_db': etree.tostring(arch_string)})
@@ -1637,7 +1638,7 @@ class Website(models.Model):
         :return text extracted from the html
         """
         # lxml requires one single root element
-        tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True))
+        tree = etree.fromstring('<p>%s</p>' % html_fragment, etree.XMLParser(recover=True), parser=lxml.etree.XMLParser(resolve_entities=False))
         return ' '.join(tree.itertext())
 
     def _search_get_details(self, search_type, order, options):

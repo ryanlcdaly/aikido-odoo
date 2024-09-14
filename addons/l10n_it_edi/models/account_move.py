@@ -12,6 +12,7 @@ from odoo.addons.base.models.ir_qweb_fields import Markup, nl2br, nl2br_enclose
 from odoo.addons.account_edi_proxy_client.models.account_edi_proxy_user import AccountEdiProxyError
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_repr, cleanup_xml_node
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -1394,7 +1395,7 @@ class AccountMove(models.Model):
         if not (xml_content := notification.get('xml_content')):
             return {'sdi_state': sdi_state}
 
-        decrypted_update_content = etree.fromstring(xml_content)
+        decrypted_update_content = etree.fromstring(xml_content, parser=lxml.etree.XMLParser(resolve_entities=False))
         outcome = get_text(decrypted_update_content, './/Esito')
         date_arrival = get_datetime(decrypted_update_content, './/DataOraRicezione') or fields.Date.today()
         errors = [(

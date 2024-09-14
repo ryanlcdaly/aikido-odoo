@@ -11,6 +11,7 @@ import odoo
 from odoo.tests import common
 from odoo.tools.convert import convert_file, xml_import, _eval_xml
 from odoo.tools.misc import file_path
+import lxml.etree
 
 Field = E.field
 Value = E.value
@@ -210,7 +211,7 @@ class TestEvalXML(common.TransactionCase):
                     </record>
                 </field>
             </record>
-        """.strip())
+        """.strip(), parser=lxml.etree.XMLParser(resolve_entities=False))
         obj = xml_import(self.env, 'test_convert', None, 'init')
         obj._tag_record(xml)
 
@@ -238,7 +239,7 @@ class TestEvalXML(common.TransactionCase):
         # Reset the value to the one from the XML data file,
         # with a lang passed in the environment.
         filepath = file_path('test_convert/data/test_translated_field/test_model_data.xml')
-        doc = ET.parse(filepath)
+        doc = ET.parse(filepath, parser=lxml.etree.XMLParser(resolve_entities=False))
         obj = xml_import(env_fr, 'test_convert', {}, mode='init', xml_filename=filepath)
         obj.parse(doc.getroot())
         self.assertEqual(record.with_context(lang=None).name, 'foo')
@@ -275,7 +276,7 @@ class TestEvalXML(common.TransactionCase):
                 <t t-else="">
                     <t t-out="'text2'"></t>
                 </t>
-            </parent>"""), type="html")),
+            </parent>""", parser=lxml.etree.XMLParser(resolve_entities=False)), type="html")),
             """<parent>
                 <t t-if="True">
                     <t t-out="'text'"></t>

@@ -3,6 +3,7 @@
 from lxml import etree
 from odoo import Command
 from odoo.tests.common import TransactionCase
+import lxml.etree
 
 
 class TestResCurrency(TransactionCase):
@@ -17,7 +18,7 @@ class TestResCurrency(TransactionCase):
         for company, expected_currency in [(company_foo, 'EUR'), (company_bar, 'USD')]:
             for model, view_type in [('res.currency', 'form'), ('res.currency.rate', 'tree')]:
                 arch = self.env[model].with_company(company).get_view(view_type=view_type)['arch']
-                tree = etree.fromstring(arch)
+                tree = etree.fromstring(arch, parser=lxml.etree.XMLParser(resolve_entities=False))
                 node_company_rate = tree.xpath('//field[@name="company_rate"]')[0]
                 node_inverse_company_rate = tree.xpath('//field[@name="inverse_company_rate"]')[0]
                 self.assertEqual(node_company_rate.get('string'), f'Unit per {expected_currency}')

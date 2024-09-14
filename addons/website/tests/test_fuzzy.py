@@ -10,6 +10,7 @@ from odoo.addons.website.controllers.main import Website
 from odoo.addons.website.tools import distance, MockRequest
 import odoo.tests
 from odoo.tests.common import TransactionCase
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class TestFuzzy(TransactionCase):
                 for field, value in record.items():
                     if isinstance(value, str):
                         if field == 'arch':
-                            view_arch = etree.fromstring(value.encode('utf-8'))
+                            view_arch = etree.fromstring(value.encode('utf-8'), parser=lxml.etree.XMLParser(resolve_entities=False))
                             value = ' '.join(view_arch.itertext())
                         for word in re.findall(match_pattern, value):
                             words.add(word.lower())

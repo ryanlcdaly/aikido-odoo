@@ -6,6 +6,7 @@ from lxml import etree
 
 from odoo.tests.common import TransactionCase, Form
 from odoo.exceptions import AccessError, UserError
+import lxml.etree
 
 class TestMultiCompanyCommon(TransactionCase):
 
@@ -424,7 +425,7 @@ class TestMultiCompanyProject(TestMultiCompanyCommon):
                 # 1. The debug mode
                 # <field name="parent_id" groups="base.group_no_one"/>
                 view = self.env.ref('project.view_task_form2').sudo()
-                tree = etree.fromstring(view.arch)
+                tree = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
                 for node in tree.xpath('//field[@name="parent_id"][@invisible]'):
                     node.attrib.pop('invisible')
                 view.arch = etree.tostring(tree)
@@ -444,7 +445,7 @@ class TestMultiCompanyProject(TestMultiCompanyCommon):
         # 1. The debug mode
         # <field name="parent_id" groups="base.group_no_one"/>
         view = self.env.ref('project.view_task_form2').sudo()
-        tree = etree.fromstring(view.arch)
+        tree = etree.fromstring(view.arch, parser=lxml.etree.XMLParser(resolve_entities=False))
         for node in tree.xpath('//field[@name="parent_id"][@invisible]'):
             node.attrib.pop('invisible')
         view.arch = etree.tostring(tree)

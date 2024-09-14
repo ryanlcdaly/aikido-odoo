@@ -17,6 +17,7 @@ import odoo
 from odoo.models import BaseModel
 from odoo.fields import Command
 from odoo.tools.safe_eval import safe_eval
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ class Form:
         views = record.get_views([(view_id, 'form')])
         object.__setattr__(self, '_models_info', views['models'])
         # self._models_info = {model_name: {field_name: field_info}}
-        tree = etree.fromstring(views['views']['form']['arch'])
+        tree = etree.fromstring(views['views']['form']['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
         view = self._process_view(tree, record)
         object.__setattr__(self, '_view', view)
         # self._view = {
@@ -260,7 +261,7 @@ class Form:
                 continue
             refs = self._env['ir.ui.view']._get_view_refs(node)
             subviews = submodel.with_context(**refs).get_views([(None, view_type)])
-            subnode = etree.fromstring(subviews['views'][view_type]['arch'])
+            subnode = etree.fromstring(subviews['views'][view_type]['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
             views[view_type] = subnode
             node.append(subnode)
             for model_name, fields in subviews['models'].items():

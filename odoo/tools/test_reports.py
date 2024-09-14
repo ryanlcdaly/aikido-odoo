@@ -16,6 +16,7 @@ from subprocess import Popen, PIPE
 from .. import api
 from . import ustr, config
 from .safe_eval import safe_eval
+import lxml.etree
 
 _logger = logging.getLogger(__name__)
 _test_logger = logging.getLogger('odoo.tests')
@@ -171,7 +172,7 @@ def try_report_action(cr, uid, action_id, active_model=None, active_ids=None,
             view_res = model.get_view(view_id, view_type)
             assert view_res and view_res.get('arch'), "Did not return any arch for the view"
             view_data = {}
-            arch = etree.fromstring(view_res['arch'])
+            arch = etree.fromstring(view_res['arch'], parser=lxml.etree.XMLParser(resolve_entities=False))
             fields = [el.get('name') for el in arch.xpath('//field[not(ancestor::field)]')]
             if fields:
                 view_data = model.default_get(fields)
